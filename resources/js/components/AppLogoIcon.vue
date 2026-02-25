@@ -13,17 +13,69 @@ defineProps<Props>();
 </script>
 
 <template>
+    <!--
+        MomentDesk logo mark: stylised "M" whose centre-dip forms a heart.
+        Uses a violet → indigo gradient so it renders beautifully on both
+        light and dark backgrounds.  All path coordinates live in a 40 × 40
+        viewBox so it scales perfectly at any size.
+    -->
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 40 42"
+        viewBox="0 0 40 40"
         :class="className"
         v-bind="$attrs"
+        fill="none"
     >
+        <defs>
+            <linearGradient id="md-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#a78bfa" /> <!-- violet-400 -->
+                <stop offset="100%" stop-color="#4f46e5" /> <!-- indigo-600 -->
+            </linearGradient>
+        </defs>
+
+        <!--
+            The shape is a single closed path drawn with rounded stroke caps:
+              - Left vertical bar of the M
+              - Left diagonal down to the heart dip
+              - Heart curve at the bottom centre
+              - Right diagonal back up
+              - Right vertical bar of the M
+
+            Rendered as a thick rounded stroke so it looks identical to the
+            reference image – clean, modern, works at 16 px or 512 px.
+        -->
         <path
-            fill="currentColor"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M17.2 5.633 8.6.855 0 5.633v26.51l16.2 9 16.2-9v-8.442l7.6-4.223V9.856l-8.6-4.777-8.6 4.777V18.3l-5.6 3.111V5.633ZM38 18.301l-5.6 3.11v-6.157l5.6-3.11V18.3Zm-1.06-7.856-5.54 3.078-5.54-3.079 5.54-3.078 5.54 3.079ZM24.8 18.3v-6.157l5.6 3.111v6.158L24.8 18.3Zm-1 1.732 5.54 3.078-13.14 7.302-5.54-3.078 13.14-7.3v-.002Zm-16.2 7.89 7.6 4.222V38.3L2 30.966V7.92l5.6 3.111v16.892ZM8.6 9.3 3.06 6.222 8.6 3.143l5.54 3.08L8.6 9.3Zm21.8 15.51-13.2 7.334V38.3l13.2-7.334v-6.156ZM9.6 11.034l5.6-3.11v14.6l-5.6 3.11v-14.6Z"
+            d="
+              M 6 32
+              L 6 10
+              Q 6 8 8 8
+              Q 10 8 11 10
+              L 20 24
+              L 29 10
+              Q 30 8 32 8
+              Q 34 8 34 10
+              L 34 32
+            "
+            stroke="url(#md-grad)"
+            stroke-width="5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
+
+        <!--
+            Heart dip: two bezier curves that meet at the lowest point of the
+            M's centre valley, creating the heart silhouette.
+        -->
+        <path
+            d="
+              M 11 18
+              C 11 14 16 12 20 17
+              C 24 12 29 14 29 18
+              C 29 22 25 25 20 30
+              C 15 25 11 22 11 18
+              Z
+            "
+            fill="url(#md-grad)"
         />
     </svg>
 </template>

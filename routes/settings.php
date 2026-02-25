@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\TenantProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,4 +29,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');
+
+    Route::middleware(['ensure-tenant'])->group(function () {
+        Route::get('settings/tenant-profile', [TenantProfileController::class, 'edit'])->name('tenant-profile.edit');
+        Route::patch('settings/tenant-profile', [TenantProfileController::class, 'update'])->name('tenant-profile.update');
+    });
 });

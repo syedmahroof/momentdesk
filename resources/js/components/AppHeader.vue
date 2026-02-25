@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Menu, Monitor, Moon, Search, Sun } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { useAppearance } from '@/composables/useAppearance';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -49,6 +50,16 @@ const props = withDefaults(defineProps<Props>(), {
 const page = usePage();
 const auth = computed(() => page.props.auth);
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+
+const { appearance, updateAppearance } = useAppearance();
+
+const appearanceCycle: Record<string, { next: 'light' | 'dark' | 'system'; icon: typeof Sun; label: string }> = {
+    light:  { next: 'dark',   icon: Sun,     label: 'Switch to Dark'   },
+    dark:   { next: 'system', icon: Moon,    label: 'Switch to System' },
+    system: { next: 'light',  icon: Monitor, label: 'Switch to Light'  },
+};
+
+const currentMode = computed(() => appearanceCycle[appearance.value] ?? appearanceCycle['system']);
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
@@ -237,6 +248,29 @@ const rightNavItems: NavItem[] = [
                             </template>
                         </div>
                     </div>
+
+                    <!-- Appearance Toggle -->
+                    <TooltipProvider :delay-duration="0">
+                        <Tooltip>
+                            <TooltipTrigger as-child>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="group h-9 w-9 cursor-pointer"
+                                    @click="updateAppearance(currentMode.next)"
+                                >
+                                    <component
+                                        :is="currentMode.icon"
+                                        class="size-5 opacity-80 transition-all group-hover:opacity-100"
+                                    />
+                                    <span class="sr-only">{{ currentMode.label }}</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{{ currentMode.label }}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger :as-child="true">

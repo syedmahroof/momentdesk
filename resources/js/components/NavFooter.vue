@@ -33,7 +33,18 @@ defineProps<Props>();
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            <component :is="item.icon" />
+                            <span
+                                v-if="item.icon"
+                                :class="[
+                                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-transform duration-150 group-hover/nav:scale-110',
+                                    item.bgColor ?? 'bg-muted',
+                                ]"
+                            >
+                                <component
+                                    :is="item.icon"
+                                    :class="['size-3.5', item.color ?? 'text-muted-foreground']"
+                                />
+                            </span>
                             <span>{{ item.title }}</span>
                         </a>
                     </SidebarMenuButton>

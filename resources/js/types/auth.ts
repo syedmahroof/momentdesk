@@ -9,8 +9,21 @@ export type User = {
     [key: string]: unknown;
 };
 
+export type Tenant = {
+    id: number;
+    name: string;
+    slug: string;
+    email: string;
+    phone: string | null;
+    status: 'active' | 'inactive' | 'suspended';
+    settings: Record<string, unknown> | null;
+    created_at: string;
+    updated_at: string;
+};
+
 export type Auth = {
     user: User;
+    tenant: Tenant | null;
 };
 
 export type TwoFactorConfigContent = {
