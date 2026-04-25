@@ -40,6 +40,54 @@ export type Template = {
     is_default: boolean;
 };
 
+export type FlyerElement = {
+    id: string;
+    type: 'text' | 'image';
+    key: string | null;
+    label: string;
+    content: string | null;
+    placeholder: string | null;
+    x: number;
+    y: number;
+    width: number | null;
+    height: number | null;
+    font_size: number | null;
+    color: string | null;
+    alignment: 'left' | 'center' | 'right' | null;
+    font_weight: 'normal' | 'medium' | 'semibold' | 'bold' | null;
+};
+
+export type FlyerTemplate = {
+    id: number;
+    title: string;
+    category: 'daily_gold_rate' | 'daily_wishes' | 'product_rate' | 'custom';
+    paper_size: 'a4' | 'custom';
+    canvas_width: number;
+    canvas_height: number;
+    background_type: 'color' | 'image';
+    background_color: string | null;
+    background_image_path?: string | null;
+    background_image_url: string | null;
+    elements: FlyerElement[];
+    is_active?: boolean;
+    created_at?: string;
+};
+
+export type Flyer = {
+    id: number;
+    title: string;
+    paper_size: 'a4' | 'custom';
+    canvas_width: number;
+    canvas_height: number;
+    field_values: Record<string, string>;
+    element_overrides: Record<string, Partial<FlyerElement>>;
+    asset_paths: Record<string, string>;
+    asset_urls: Record<string, string>;
+    template_snapshot: Omit<FlyerTemplate, 'id' | 'is_active' | 'created_at'> & { background_image_path?: string | null };
+    flyer_template?: { id: number; title: string } | null;
+    created_at?: string;
+};
+
 export type MessageLog = {
     id: number;
     channel: string;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\ProvisionTenantForUser;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,10 @@ use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
 {
+    public function __construct(
+        private readonly ProvisionTenantForUser $provisionTenantForUser,
+    ) {}
+
     /** Redirect to the OAuth provider */
     public function redirect(string $provider)
     {
@@ -32,11 +37,14 @@ class SocialAuthController extends Controller
         $user = User::firstOrCreate(
             ['email' => $socialUser->getEmail()],
             [
-                'name'              => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
-                'password'          => bcrypt(Str::random(32)),
+                'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
+                'password' => bcrypt(Str::random(32)),
                 'email_verified_at' => now(),
+                'role' => 'admin',
             ]
         );
+
+        $user = ($this->provisionTenantForUser)($user);
 
         Auth::login($user, true);
 

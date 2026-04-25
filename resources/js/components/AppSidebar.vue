@@ -2,12 +2,17 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
+    Image,
     LayoutGrid,
     MessageSquareHeart,
+    Palette,
+    PenSquare,
+    Printer,
     Settings,
     Shield,
     Users,
 } from 'lucide-vue-next';
+import NavFlyers from '@/components/NavFlyers.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -42,11 +47,42 @@ const mainNavItems: NavItem[] = [
         bgColor: 'bg-sky-500/10 dark:bg-sky-500/15',
     },
     {
-        title: 'Templates',
+        title: 'Message templates',
         href: '/templates',
         icon: MessageSquareHeart,
+        color: 'text-emerald-500',
+        bgColor: 'bg-emerald-500/10 dark:bg-emerald-500/15',
+    },
+];
+
+const flyerNavItems: NavItem[] = [
+    {
+        title: 'My flyers',
+        href: '/flyers',
+        icon: Image,
+        color: 'text-fuchsia-500',
+        bgColor: 'bg-fuchsia-500/10 dark:bg-fuchsia-500/15',
+    },
+    {
+        title: 'Flyer templates',
+        href: '/flyer-templates',
+        icon: Palette,
+        color: 'text-indigo-500',
+        bgColor: 'bg-indigo-500/10 dark:bg-indigo-500/15',
+    },
+    {
+        title: 'Create flyer',
+        href: '/flyers/create',
+        icon: PenSquare,
         color: 'text-rose-500',
         bgColor: 'bg-rose-500/10 dark:bg-rose-500/15',
+    },
+    {
+        title: 'Preview & print',
+        href: '/preview-print',
+        icon: Printer,
+        color: 'text-amber-500',
+        bgColor: 'bg-amber-500/10 dark:bg-amber-500/15',
     },
 ];
 
@@ -96,6 +132,7 @@ const isSuperAdmin = page.props.auth?.user?.role === 'super_admin';
 
         <SidebarContent>
             <NavMain :items="mainNavItems" label="Main" />
+            <NavFlyers :items="flyerNavItems" />
             <NavMain v-if="isSuperAdmin" :items="adminNavItems" label="Admin" />
         </SidebarContent>
 

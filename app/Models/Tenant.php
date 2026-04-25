@@ -46,4 +46,14 @@ class Tenant extends Model
     {
         return $this->hasMany(MessageLog::class);
     }
+
+    public function flyerTemplates(): HasMany
+    {
+        return $this->hasMany(FlyerTemplate::class);
+    }
+
+    public function flyers(): HasMany
+    {
+        return $this->hasMany(Flyer::class);
+    }
 }
