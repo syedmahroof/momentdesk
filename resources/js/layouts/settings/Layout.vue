@@ -8,7 +8,6 @@ import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { edit as editAppearance } from '@/routes/appearance';
-import { edit as editProfile } from '@/routes/profile';
 import { edit as editTenantProfile } from '@/routes/tenant-profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
@@ -17,10 +16,6 @@ const page = usePage();
 const hasTenant = computed(() => !!page.props.auth.tenant);
 
 const baseSidebarNavItems: NavItem[] = [
-    {
-        title: 'Profile',
-        href: editProfile(),
-    },
     {
         title: 'Password',
         href: editPassword(),
@@ -36,13 +31,13 @@ const baseSidebarNavItems: NavItem[] = [
 ];
 
 const tenantNavItem: NavItem = {
-    title: 'Tenant Profile',
+    title: 'Profile',
     href: editTenantProfile(),
 };
 
 const sidebarNavItems = computed(() =>
     hasTenant.value
-        ? [...baseSidebarNavItems, tenantNavItem]
+        ? [tenantNavItem, ...baseSidebarNavItems]
         : baseSidebarNavItems,
 );
 

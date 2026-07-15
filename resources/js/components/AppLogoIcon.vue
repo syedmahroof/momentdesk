@@ -26,13 +26,6 @@ defineProps<Props>();
         v-bind="$attrs"
         fill="none"
     >
-        <defs>
-            <linearGradient id="md-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                <stop offset="0%"   stop-color="#a78bfa" /> <!-- violet-400 -->
-                <stop offset="100%" stop-color="#4f46e5" /> <!-- indigo-600 -->
-            </linearGradient>
-        </defs>
-
         <!--
             The shape is a single closed path drawn with rounded stroke caps:
               - Left vertical bar of the M
@@ -56,7 +49,7 @@ defineProps<Props>();
               Q 34 8 34 10
               L 34 32
             "
-            stroke="url(#md-grad)"
+            stroke="currentColor"
             stroke-width="5"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -75,7 +68,7 @@ defineProps<Props>();
               C 15 25 11 22 11 18
               Z
             "
-            fill="url(#md-grad)"
+            fill="currentColor"
         />
     </svg>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronRight, Image } from 'lucide-vue-next';
+import { ChevronRight, Images } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -91,11 +91,9 @@ function isSubItemActive(item: NavItem): boolean {
                             :is-active="parentActive"
                             class="group/trigger w-full"
                         >
-                            <span
-                                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-fuchsia-500/10 transition-transform duration-150 group-hover/trigger:scale-110 dark:bg-fuchsia-500/15"
-                            >
-                                <Image class="size-3.5 text-fuchsia-500" />
-                            </span>
+                            <Images
+                                class="size-5 shrink-0 text-muted-foreground transition-colors group-data-[active=true]/trigger:text-sidebar-accent-foreground"
+                            />
                             <span class="font-medium">Flyers</span>
                             <ChevronRight
                                 :class="[
@@ -110,18 +108,11 @@ function isSubItemActive(item: NavItem): boolean {
                             <SidebarMenuSubItem v-for="item in items" :key="item.title">
                                 <SidebarMenuSubButton as-child :is-active="isSubItemActive(item)" size="md">
                                     <Link :href="item.href" class="flex min-w-0 items-center gap-2">
-                                        <span
+                                        <component
+                                            :is="item.icon"
                                             v-if="item.icon"
-                                            :class="[
-                                                'flex h-5 w-5 shrink-0 items-center justify-center rounded-md',
-                                                item.bgColor ?? 'bg-muted',
-                                            ]"
-                                        >
-                                            <component
-                                                :is="item.icon"
-                                                :class="['size-3', item.color ?? 'text-muted-foreground']"
-                                            />
-                                        </span>
+                                            class="size-4 shrink-0 text-muted-foreground"
+                                        />
                                         <span class="truncate font-medium">{{ item.title }}</span>
                                     </Link>
                                 </SidebarMenuSubButton>

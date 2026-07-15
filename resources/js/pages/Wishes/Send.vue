@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import { Loader2, Sparkles, ExternalLink } from 'lucide-vue-next';
+import { Award, Cake, ExternalLink, Heart, Loader2, Sparkles, Star } from 'lucide-vue-next';
 import axios from 'axios';
-import { computed, ref } from 'vue';
+import { computed, ref, type Component } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type Customer, type CustomerDate, type Template } from '@/types';
 
@@ -88,11 +88,18 @@ function submit() {
     form.post(`/customers/${props.customer.id}/dates/${props.date.id}/send`);
 }
 
-const eventTypeEmoji: Record<string, string> = {
-    birthday: '🎂',
-    wedding: '💍',
-    work: '🏆',
-    custom: '🌟',
+const eventTypeIcon: Record<string, Component> = {
+    birthday: Cake,
+    wedding: Heart,
+    work: Award,
+    custom: Star,
+};
+
+const eventTypeIconColor: Record<string, string> = {
+    birthday: 'text-rose-500',
+    wedding: 'text-violet-500',
+    work: 'text-amber-500',
+    custom: 'text-sky-500',
 };
 </script>
 
@@ -103,9 +110,11 @@ const eventTypeEmoji: Record<string, string> = {
         <div class="p-6">
             <div class="mx-auto max-w-2xl space-y-6">
                 <!-- Event info -->
-                <div class="rounded-2xl border border-border bg-gradient-to-r from-primary/5 to-violet-500/5 p-5">
+                <div class="rounded-lg border border-border bg-gradient-to-r from-primary/5 to-indigo-500/5 p-5">
                     <div class="flex items-center gap-3">
-                        <span class="text-3xl">{{ eventTypeEmoji[date.type] ?? '🌟' }}</span>
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-background/70 ring-1 ring-border">
+                            <component :is="eventTypeIcon[date.type] ?? Star" :class="['h-6 w-6', eventTypeIconColor[date.type]]" />
+                        </span>
                         <div>
                             <p class="font-semibold text-foreground">{{ customer.name }}</p>
                             <p class="text-sm text-muted-foreground">
@@ -117,7 +126,7 @@ const eventTypeEmoji: Record<string, string> = {
                 </div>
 
                 <!-- Success / WhatsApp link -->
-                <div v-if="page.props.flash?.success" class="rounded-xl border border-green-200 bg-green-50 p-4">
+                <div v-if="page.props.flash?.success" class="rounded-lg border border-green-200 bg-green-50 p-4">
                     <p class="text-sm font-medium text-green-700">{{ page.props.flash.success }}</p>
                     <a
                         v-if="page.props.flash?.whatsapp_link"
@@ -131,7 +140,7 @@ const eventTypeEmoji: Record<string, string> = {
                 </div>
 
                 <!-- Channel selection -->
-                <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <div class="rounded-lg border border-border bg-card p-5 shadow-sm">
                     <h2 class="mb-3 text-sm font-semibold text-muted-foreground">Channel</h2>
                     <div class="flex gap-3">
                         <button
@@ -139,7 +148,7 @@ const eventTypeEmoji: Record<string, string> = {
                             :key="opt.value"
                             type="button"
                             :class="[
-                                'flex-1 rounded-xl border py-2.5 text-sm font-medium transition',
+                                'flex-1 rounded-lg border py-2.5 text-sm font-medium transition',
                                 form.channel === opt.value ? opt.color + ' ring-2 ring-offset-1 ring-current' : 'border-border text-muted-foreground hover:bg-muted',
                             ]"
                             @click="form.channel = opt.value as typeof form.channel; form.template_id = null"
@@ -150,7 +159,7 @@ const eventTypeEmoji: Record<string, string> = {
                 </div>
 
                 <!-- Templates -->
-                <div v-if="filteredTemplates.length" class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <div v-if="filteredTemplates.length" class="rounded-lg border border-border bg-card p-5 shadow-sm">
                     <h2 class="mb-3 text-sm font-semibold text-muted-foreground">Templates</h2>
                     <div class="flex flex-col gap-2">
                         <button
@@ -158,7 +167,7 @@ const eventTypeEmoji: Record<string, string> = {
                             :key="template.id"
                             type="button"
                             :class="[
-                                'rounded-xl border p-3 text-left text-sm transition',
+                                'rounded-lg border p-3 text-left text-sm transition',
                                 form.template_id === template.id
                                     ? 'border-primary bg-primary/5 text-foreground'
                                     : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-muted',
@@ -172,10 +181,10 @@ const eventTypeEmoji: Record<string, string> = {
                 </div>
 
                 <!-- AI Generation -->
-                <div class="rounded-2xl border border-violet-200 bg-violet-50/50 p-5 shadow-sm">
+                <div class="rounded-lg border border-indigo-200 bg-indigo-50/50 p-5 shadow-sm">
                     <div class="mb-3 flex items-center gap-2">
-                        <Sparkles class="h-4 w-4 text-violet-600" />
-                        <h2 class="text-sm font-semibold text-violet-700">AI Assistant</h2>
+                        <Sparkles class="h-4 w-4 text-indigo-600" />
+                        <h2 class="text-sm font-semibold text-indigo-700">AI Assistant</h2>
                     </div>
                     <div class="mb-3 flex flex-wrap gap-2">
                         <button
@@ -185,8 +194,8 @@ const eventTypeEmoji: Record<string, string> = {
                             :class="[
                                 'rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition',
                                 aiTone === tone
-                                    ? 'bg-violet-600 text-white'
-                                    : 'border border-violet-200 text-violet-600 hover:bg-violet-100',
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'border border-indigo-200 text-indigo-600 hover:bg-indigo-100',
                             ]"
                             @click="aiTone = tone"
                         >
@@ -197,7 +206,7 @@ const eventTypeEmoji: Record<string, string> = {
                         <button
                             type="button"
                             :disabled="aiLoading"
-                            class="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-violet-700 disabled:opacity-70"
+                            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-70"
                             @click="generateWithAI"
                         >
                             <Loader2 v-if="aiLoading" class="h-4 w-4 animate-spin" />
@@ -207,7 +216,7 @@ const eventTypeEmoji: Record<string, string> = {
                         <button
                             type="button"
                             :disabled="aiLoading || !form.message"
-                            class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-medium text-violet-600 transition hover:bg-violet-100 disabled:opacity-40"
+                            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-indigo-200 px-4 py-2.5 text-sm font-medium text-indigo-600 transition hover:bg-indigo-100 disabled:opacity-40"
                             @click="improveWithAI"
                         >
                             Improve
@@ -216,13 +225,13 @@ const eventTypeEmoji: Record<string, string> = {
                 </div>
 
                 <!-- Message compose -->
-                <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <div class="rounded-lg border border-border bg-card p-5 shadow-sm">
                     <h2 class="mb-3 text-sm font-semibold text-muted-foreground">Message</h2>
                     <textarea
                         v-model="form.message"
                         rows="5"
                         placeholder="Type your wish here, or use a template or AI to generate one..."
-                        class="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                     <p v-if="form.errors.message" class="mt-1 text-xs text-destructive">{{ form.errors.message }}</p>
                     <p class="mt-1 text-right text-xs text-muted-foreground">{{ form.message.length }} chars</p>
@@ -234,7 +243,7 @@ const eventTypeEmoji: Record<string, string> = {
                     <button
                         type="button"
                         :disabled="form.processing || !form.message"
-                        class="flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-70"
+                        class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-70"
                         @click="submit"
                     >
                         {{ form.processing ? 'Sending...' : 'Send Wish' }}

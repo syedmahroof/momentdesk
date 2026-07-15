@@ -4,13 +4,20 @@ use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TenantProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', '/settings/profile');
+    Route::get('settings', function (Request $request) {
+        return $request->user()->tenant_id
+            ? redirect()->route('tenant-profile.edit')
+            : redirect()->route('user-password.edit');
+    })->name('settings');
 
-    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Profile now lives on the combined tenant-profile page; keep this route so
+    // the user-profile form and account deletion continue to resolve.
+    Route::get('settings/profile', [TenantProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 

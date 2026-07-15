@@ -27,10 +27,10 @@ const form = useForm({
 });
 
 const dateTypes = [
-    { value: 'birthday', label: '🎂 Birthday' },
-    { value: 'wedding', label: '💍 Wedding Anniversary' },
-    { value: 'work', label: '🏆 Work Anniversary' },
-    { value: 'custom', label: '🌟 Custom Event' },
+    { value: 'birthday', label: 'Birthday' },
+    { value: 'wedding', label: 'Wedding Anniversary' },
+    { value: 'work', label: 'Work Anniversary' },
+    { value: 'custom', label: 'Custom Event' },
 ];
 
 function addDate() {
@@ -66,7 +66,7 @@ function submit() {
 
                 <form @submit.prevent="submit">
                     <!-- Customer Info -->
-                    <div class="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+                    <div class="mb-6 rounded-lg border border-border bg-card p-6 shadow-sm">
                         <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Customer Information</h2>
 
                         <div class="grid gap-4">
@@ -76,7 +76,7 @@ function submit() {
                                     v-model="form.name"
                                     type="text"
                                     placeholder="e.g. Alice Johnson"
-                                    class="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                                 />
                                 <p v-if="form.errors.name" class="mt-1 text-xs text-destructive">{{ form.errors.name }}</p>
                             </div>
@@ -88,7 +88,7 @@ function submit() {
                                         v-model="form.phone"
                                         type="tel"
                                         placeholder="+1 234 567 8900"
-                                        class="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                                     />
                                 </div>
                                 <div>
@@ -97,7 +97,7 @@ function submit() {
                                         v-model="form.email"
                                         type="email"
                                         placeholder="alice@example.com"
-                                        class="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                                     />
                                 </div>
                             </div>
@@ -108,7 +108,7 @@ function submit() {
                                     v-model="form.whatsapp_number"
                                     type="tel"
                                     placeholder="+1 234 567 8900"
-                                    class="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                                 />
                                 <p class="mt-1 text-xs text-muted-foreground">Include country code (e.g. +1, +44, +92)</p>
                             </div>
@@ -119,14 +119,14 @@ function submit() {
                                     v-model="form.notes"
                                     rows="3"
                                     placeholder="Any additional notes..."
-                                    class="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                                 />
                             </div>
                         </div>
                     </div>
 
                     <!-- Important Dates -->
-                    <div class="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+                    <div class="mb-6 rounded-lg border border-border bg-card p-6 shadow-sm">
                         <div class="mb-4 flex items-center justify-between">
                             <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Important Dates</h2>
                             <button
@@ -139,7 +139,7 @@ function submit() {
                             </button>
                         </div>
 
-                        <div v-if="!form.dates.length" class="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+                        <div v-if="!form.dates.length" class="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
                             No dates added yet. Click "Add Date" to add a birthday, anniversary, or custom event.
                         </div>
 
@@ -147,7 +147,7 @@ function submit() {
                             <div
                                 v-for="(date, index) in form.dates"
                                 :key="index"
-                                class="relative rounded-xl border border-border p-4"
+                                class="relative rounded-lg border border-border p-4"
                             >
                                 <button
                                     type="button"
@@ -225,7 +225,7 @@ function submit() {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-70"
+                            class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-70"
                         >
                             {{ form.processing ? 'Saving...' : 'Add Customer' }}
                         </button>

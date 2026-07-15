@@ -195,7 +195,7 @@ function submit(): void {
                     </div>
                     <Link
                         href="/flyer-templates"
-                        class="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
+                        class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
                     >
                         Back
                     </Link>
@@ -219,7 +219,7 @@ function submit(): void {
                                             v-model="form.title"
                                             type="text"
                                             required
-                                            class="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none"
+                                            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none"
                                             placeholder="e.g. Daily Gold Rate (Modern Blue)"
                                         />
                                         <p class="mt-1.5 text-xs text-muted-foreground">Give your template a clear, descriptive name.</p>
@@ -229,14 +229,14 @@ function submit(): void {
                                             <label class="mb-1.5 block text-sm font-semibold text-foreground">Post Size</label>
                                             <select
                                                 v-model="selectedPostSize"
-                                                class="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
+                                                class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
                                             >
                                                 <option v-for="opt in digitalPostSizeOptions" :key="opt.value" :value="opt.value">
                                                     {{ opt.label }}
                                                 </option>
                                             </select>
                                     </div>
-                                    <div v-if="selectedPostSize === 'custom'" class="grid gap-4 rounded-2xl bg-muted/20 p-4 sm:grid-cols-2">
+                                    <div v-if="selectedPostSize === 'custom'" class="grid gap-4 rounded-lg bg-muted/20 p-4 sm:grid-cols-2">
                                         <div>
                                             <label class="mb-1 block text-xs font-medium text-muted-foreground uppercase">Width (px)</label>
                                             <input
@@ -244,7 +244,7 @@ function submit(): void {
                                                 type="number"
                                                 min="400"
                                                 max="3000"
-                                                class="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm"
+                                                class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm"
                                             />
                                         </div>
                                         <div>
@@ -254,7 +254,7 @@ function submit(): void {
                                                 type="number"
                                                 min="400"
                                                 max="3000"
-                                                class="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm"
+                                                class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm"
                                             />
                                         </div>
                                     </div>
@@ -284,7 +284,7 @@ function submit(): void {
                                         <div class="grid grid-cols-2 gap-4">
                                             <button
                                                 type="button"
-                                                class="flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all"
+                                                class="flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all"
                                                 :class="form.background_type === 'color' ? 'border-primary bg-primary/5 text-primary' : 'border-border bg-background hover:bg-muted/50'"
                                                 @click="form.background_type = 'color'"
                                             >
@@ -293,7 +293,7 @@ function submit(): void {
                                             </button>
                                             <button
                                                 type="button"
-                                                class="flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all"
+                                                class="flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all"
                                                 :class="form.background_type === 'image' ? 'border-primary bg-primary/5 text-primary' : 'border-border bg-background hover:bg-muted/50'"
                                                 @click="form.background_type = 'image'"
                                             >
@@ -305,21 +305,21 @@ function submit(): void {
                                         </div>
                                     </div>
 
-                                    <div v-if="form.background_type === 'color'" class="rounded-2xl bg-muted/20 p-5">
+                                    <div v-if="form.background_type === 'color'" class="rounded-lg bg-muted/20 p-5">
                                         <label class="mb-2 block text-xs font-bold uppercase text-muted-foreground">Pick Canvas Color</label>
                                         <div class="flex items-center gap-4">
-                                            <div class="relative h-12 w-12 overflow-hidden rounded-xl border border-border shadow-inner">
+                                            <div class="relative h-12 w-12 overflow-hidden rounded-lg border border-border shadow-inner">
                                                 <input v-model="form.background_color" type="color" class="absolute -inset-2 h-16 w-16 cursor-pointer" />
                                             </div>
                                             <input
                                                 v-model="form.background_color"
                                                 type="text"
-                                                class="flex-1 rounded-xl border border-border bg-background px-4 py-2.5 font-mono text-sm uppercase"
+                                                class="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 font-mono text-sm uppercase"
                                             />
                                         </div>
                                     </div>
 
-                                    <div v-else class="rounded-2xl border-2 border-dashed border-border bg-muted/5 p-6 text-center">
+                                    <div v-else class="rounded-lg border-2 border-dashed border-border bg-muted/5 p-6 text-center">
                                         <div v-if="!backgroundPreviewUrl">
                                             <label class="relative cursor-pointer">
                                                 <div class="mb-3 flex justify-center">
@@ -332,7 +332,7 @@ function submit(): void {
                                                 <input type="file" accept="image/*" class="sr-only" @change="onBackgroundFile" />
                                             </label>
                                         </div>
-                                        <div v-else class="relative overflow-hidden rounded-xl border border-border">
+                                        <div v-else class="relative overflow-hidden rounded-lg border border-border">
                                             <img :src="backgroundPreviewUrl" alt="" class="max-h-48 w-full object-cover" />
                                             <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity hover:opacity-100">
                                                 <label class="cursor-pointer rounded-lg bg-white px-4 py-2 text-xs font-bold text-black shadow-lg hover:bg-neutral-100">
@@ -358,7 +358,7 @@ function submit(): void {
                                 <div class="mb-6 flex flex-wrap gap-3">
                                     <button
                                         type="button"
-                                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background py-3 text-sm font-semibold transition hover:border-primary hover:text-primary"
+                                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background py-3 text-sm font-semibold transition hover:border-primary hover:text-primary"
                                         @click="addTextElement"
                                     >
                                         <Plus class="h-4 w-4" />
@@ -366,7 +366,7 @@ function submit(): void {
                                     </button>
                                     <button
                                         type="button"
-                                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background py-3 text-sm font-semibold transition hover:border-primary hover:text-primary"
+                                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background py-3 text-sm font-semibold transition hover:border-primary hover:text-primary"
                                         @click="addImageElement"
                                     >
                                         <Plus class="h-4 w-4" />
@@ -385,7 +385,7 @@ function submit(): void {
                                     <div
                                         v-for="(element, index) in form.elements"
                                         :key="element.id"
-                                        class="group relative rounded-2xl border border-border bg-muted/20 p-5 transition-all hover:border-primary/30 hover:bg-background"
+                                        class="group relative rounded-lg border border-border bg-muted/20 p-5 transition-all hover:border-primary/30 hover:bg-background"
                                     >
                                         <div class="mb-4 flex items-center justify-between">
                                             <div class="flex items-center gap-3">
@@ -418,7 +418,7 @@ function submit(): void {
                                         <div class="grid gap-4 sm:grid-cols-2">
                                             <div>
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">Placeholder / Link</label>
-                                                <select v-model="element.key" class="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10">
+                                                <select v-model="element.key" class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10">
                                                     <option :value="null">None (Static Element)</option>
                                                     <option v-for="opt in placeholderOptions" :key="opt.value" :value="opt.value">
                                                         {{ opt.label }}
@@ -430,7 +430,7 @@ function submit(): void {
                                                 <input
                                                     v-model="element.content"
                                                     type="text"
-                                                    class="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
+                                                    class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
                                                     placeholder="Preset text value..."
                                                 />
                                             </div>
@@ -439,19 +439,19 @@ function submit(): void {
                                         <div class="mt-4 grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
                                             <div>
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">X Pos</label>
-                                                <input v-model.number="element.x" type="number" class="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs" />
+                                                <input v-model.number="element.x" type="number" class="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs" />
                                             </div>
                                             <div>
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">Y Pos</label>
-                                                <input v-model.number="element.y" type="number" class="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs" />
+                                                <input v-model.number="element.y" type="number" class="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs" />
                                             </div>
                                             <div>
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">Width</label>
-                                                <input v-model.number="element.width" type="number" class="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs" />
+                                                <input v-model.number="element.width" type="number" class="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs" />
                                             </div>
                                             <div>
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">Height</label>
-                                                <input v-model.number="element.height" type="number" class="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs" />
+                                                <input v-model.number="element.height" type="number" class="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs" />
                                             </div>
                                         </div>
 
@@ -463,19 +463,19 @@ function submit(): void {
                                                     type="number"
                                                     min="8"
                                                     max="200"
-                                                    class="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs"
+                                                    class="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs"
                                                 />
                                             </div>
                                             <div class="col-span-2">
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">Text Color</label>
                                                 <div class="flex items-center gap-2">
                                                     <input v-model="element.color" type="color" class="h-8 w-8 cursor-pointer rounded border border-border" />
-                                                    <input v-model="element.color" type="text" class="flex-1 rounded-xl border border-border bg-background px-2 py-2 text-[10px] font-mono uppercase" />
+                                                    <input v-model="element.color" type="text" class="flex-1 rounded-lg border border-border bg-background px-2 py-2 text-[10px] font-mono uppercase" />
                                                 </div>
                                             </div>
                                             <div>
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">Align</label>
-                                                <select v-model="element.alignment" class="w-full rounded-xl border border-border bg-background px-2 py-2 text-xs">
+                                                <select v-model="element.alignment" class="w-full rounded-lg border border-border bg-background px-2 py-2 text-xs">
                                                     <option value="left">Left</option>
                                                     <option value="center">Center</option>
                                                     <option value="right">Right</option>
@@ -483,7 +483,7 @@ function submit(): void {
                                             </div>
                                             <div>
                                                 <label class="mb-1 block text-[10px] font-bold uppercase text-muted-foreground">Weight</label>
-                                                <select v-model="element.font_weight" class="w-full rounded-xl border border-border bg-background px-2 py-2 text-xs">
+                                                <select v-model="element.font_weight" class="w-full rounded-lg border border-border bg-background px-2 py-2 text-xs">
                                                     <option value="normal">Reg</option>
                                                     <option value="medium">Med</option>
                                                     <option value="semibold">Semi</option>
@@ -495,7 +495,7 @@ function submit(): void {
                                         <div v-if="element.type === 'image'" class="mt-4 border-t border-border pt-4">
                                             <label class="mb-2 block text-[10px] font-bold uppercase text-muted-foreground">Preview Graphic (Template Designer Only)</label>
                                             <div class="flex items-center gap-4">
-                                                <label class="cursor-pointer rounded-xl border border-border bg-background px-4 py-2 text-xs font-semibold hover:bg-muted">
+                                                <label class="cursor-pointer rounded-lg border border-border bg-background px-4 py-2 text-xs font-semibold hover:bg-muted">
                                                     Upload Sample
                                                     <input type="file" accept="image/*" class="sr-only" @change="onElementImagePreview(element.id, $event)" />
                                                 </label>
@@ -508,10 +508,10 @@ function submit(): void {
                         </div>
 
                         <div class="flex flex-wrap justify-end gap-4 py-4">
-                            <Link href="/flyer-templates" class="rounded-2xl border border-border px-8 py-3 text-sm font-bold transition hover:bg-muted">Discard</Link>
+                            <Link href="/flyer-templates" class="rounded-lg border border-border px-8 py-3 text-sm font-bold transition hover:bg-muted">Discard</Link>
                             <button
                                 type="submit"
-                                class="rounded-2xl bg-primary px-8 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-50"
+                                class="rounded-lg bg-primary px-8 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-50"
                                 :disabled="form.processing"
                             >
                                 Publish Template

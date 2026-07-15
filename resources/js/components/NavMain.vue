@@ -30,19 +30,11 @@ const { isCurrentUrl } = useCurrentUrl();
                     class="group/nav h-9"
                 >
                     <Link :href="item.href">
-                        <!-- Colored icon container -->
-                        <span
+                        <component
+                            :is="item.icon"
                             v-if="item.icon"
-                            :class="[
-                                'flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-transform duration-150 group-hover/nav:scale-110',
-                                item.bgColor ?? 'bg-muted',
-                            ]"
-                        >
-                            <component
-                                :is="item.icon"
-                                :class="['size-3.5', item.color ?? 'text-muted-foreground']"
-                            />
-                        </span>
+                            class="size-5 shrink-0 text-muted-foreground transition-colors group-data-[active=true]/nav:text-sidebar-accent-foreground"
+                        />
                         <span class="font-medium">{{ item.title }}</span>
                     </Link>
                 </SidebarMenuButton>
