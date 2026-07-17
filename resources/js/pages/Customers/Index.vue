@@ -16,6 +16,7 @@ import {
     Send,
     Star,
     Trash2,
+    UserRoundCheck,
     UsersRound,
     X,
 } from 'lucide-vue-next';
@@ -290,9 +291,19 @@ const inputClass =
                                             {{ customer.name.charAt(0).toUpperCase() }}
                                         </div>
                                         <div class="min-w-0">
-                                            <span class="block truncate font-medium text-foreground transition group-hover:text-primary">
-                                                {{ customer.name }}
-                                            </span>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="truncate font-medium text-foreground transition group-hover:text-primary">
+                                                    {{ customer.name }}
+                                                </span>
+                                                <span
+                                                    v-if="customer.from_lead"
+                                                    :title="`Converted from a ${customer.lead_source_label} lead`"
+                                                    class="inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-medium text-violet-600 dark:text-violet-400"
+                                                >
+                                                    <UserRoundCheck class="h-3 w-3" />
+                                                    Lead
+                                                </span>
+                                            </div>
                                             <p class="truncate text-xs text-muted-foreground">Added {{ customer.created_at }}</p>
                                         </div>
                                     </div>

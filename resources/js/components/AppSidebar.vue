@@ -8,6 +8,7 @@ import {
     MessageSquareText,
     RefreshCw,
     Settings,
+    UserPlus,
     Users,
 } from 'lucide-vue-next';
 import NavFooter from '@/components/NavFooter.vue';
@@ -33,6 +34,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutDashboard,
+    },
+    {
+        title: 'Leads',
+        href: '/leads',
+        icon: UserPlus,
     },
     {
         title: 'Customers',

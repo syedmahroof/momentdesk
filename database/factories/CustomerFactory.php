@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
+use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
+ * @extends Factory<Customer>
  */
 class CustomerFactory extends Factory
 {
@@ -17,7 +19,13 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'tenant_id' => Tenant::factory(),
+            'lead_id' => null,
+            'name' => fake()->name(),
+            'phone' => fake()->numerify('+91##########'),
+            'email' => fake()->safeEmail(),
+            'whatsapp_number' => null,
+            'notes' => fake()->optional()->sentence(),
         ];
     }
 }

@@ -38,7 +38,10 @@ class CustomerController extends Controller
     public function index(): Response
     {
         $customers = Customer::query()
-            ->with(['dates' => fn ($q) => $q->where('active', true)])
+            ->with([
+                'dates' => fn ($q) => $q->where('active', true),
+                'lead:id,source',
+            ])
             ->withCount('dates')
             ->latest()
             ->paginate(20)
@@ -49,6 +52,8 @@ class CustomerController extends Controller
                 'email' => $c->email,
                 'whatsapp_number' => $c->whatsapp_number,
                 'dates_count' => $c->dates_count,
+                'from_lead' => $c->lead !== null,
+                'lead_source_label' => $c->lead?->source->label(),
                 'upcoming_event' => $c->dates
                     ->map(fn ($d) => [
                         'display_title' => $d->display_title,

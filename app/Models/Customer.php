@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasTenant;
+use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,11 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Customer extends Model
 {
-    /** @use HasFactory<\Database\Factories\CustomerFactory> */
+    /** @use HasFactory<CustomerFactory> */
     use HasFactory, HasTenant;
 
     protected $fillable = [
         'tenant_id',
+        'lead_id',
         'name',
         'phone',
         'email',
@@ -31,6 +33,14 @@ class Customer extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * The lead this customer was converted from, when they were not added directly.
+     */
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class);
     }
 
     public function dates(): HasMany

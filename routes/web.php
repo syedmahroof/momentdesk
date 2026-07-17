@@ -9,6 +9,7 @@ use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\FlyerTemplateController;
 use App\Http\Controllers\GoldPosterController;
 use App\Http\Controllers\GoldRateController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\PosterTemplateController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\WishController;
@@ -43,6 +44,11 @@ Route::middleware(['auth', 'verified', 'ensure-tenant'])->group(function () {
     Route::get('customers/{customer}/details', [CustomerController::class, 'details'])->name('customers.details');
     Route::get('customers/{customer}/poster', [CustomerController::class, 'poster'])->name('customers.poster');
     Route::resource('customers', CustomerController::class);
+
+    Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
+    Route::patch('leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.status');
+    Route::resource('leads', LeadController::class)->only(['index', 'store', 'update', 'destroy']);
+
     Route::resource('flyer-templates', FlyerTemplateController::class)->except(['show']);
     Route::resource('flyers', FlyerController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
     Route::get('preview-print', [FlyerController::class, 'previewPrint'])->name('flyers.preview-print');
