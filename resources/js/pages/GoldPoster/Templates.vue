@@ -52,7 +52,7 @@ function relativeTime(iso?: string | null): string {
     <Head title="Templates" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6 lg:p-8">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 class="text-2xl font-semibold tracking-tight text-foreground">Templates</h1>

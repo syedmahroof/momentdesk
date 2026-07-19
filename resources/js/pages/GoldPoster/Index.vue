@@ -576,6 +576,9 @@ function categoryLabel(c: string): string { return c === 'poster' ? 'Poster' : '
 
 const browseOpen = ref(false);
 async function openFromBrowse(id: number) { browseOpen.value = false; await loadTemplate(id); }
+
+// ── Mobile panel tabs ─────────────────────────────────────────────────
+const mobilePanel = ref<'tools' | 'canvas' | 'props'>('canvas');
 function relativeTime(iso?: string | null): string {
     if (!iso) return '';
     const diff = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -592,7 +595,7 @@ function relativeTime(iso?: string | null): string {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-[calc(100dvh-4rem)] min-h-0 flex-col">
             <!-- Top action bar -->
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card px-4 py-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card px-3 py-2 sm:px-4">
                 <div class="flex min-w-0 items-center gap-2">
                     <h1 class="text-sm font-semibold text-foreground">Templates</h1>
                     <span class="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{{ categoryLabel(currentCategory) }}</span>
@@ -600,29 +603,54 @@ function relativeTime(iso?: string | null): string {
                         v-if="started && currentCategory === 'poster'"
                         v-model="currentType"
                         type="text"
-                        placeholder="Poster type e.g. Birthday"
-                        class="h-7 w-40 rounded-md border border-input bg-background px-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/25"
+                        placeholder="Type e.g. Birthday"
+                        class="h-7 w-28 rounded-md border border-input bg-background px-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/25 sm:w-40"
                     />
-                    <span class="truncate text-xs text-muted-foreground">· {{ currentName || 'Unsaved' }}</span>
+                    <span class="hidden truncate text-xs text-muted-foreground sm:inline">· {{ currentName || 'Unsaved' }}</span>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <select class="h-9 rounded-md border border-input bg-background px-2 text-sm text-foreground" @change="onNewSelect">
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <select class="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground sm:h-9 sm:text-sm" @change="onNewSelect">
                         <option value="">New…</option>
                         <option value="gold_rate">Gold rate</option>
                         <option value="birthday">Birthday poster</option>
                         <option value="blank">Blank poster</option>
                     </select>
-                    <button type="button" class="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted" @click="browseOpen = true"><LayoutList class="h-4 w-4" /> Browse</button>
-                    <button v-if="currentTemplateId" type="button" class="rounded-md p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive" title="Delete template" @click="deleteTemplate(currentTemplateId)"><Trash2 class="h-4 w-4" /></button>
-                    <button type="button" class="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted" @click="saveTemplate(true)">Save as new</button>
-                    <button type="button" class="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted" @click="saveTemplate(false)"><Save class="h-4 w-4" /> Save</button>
-                    <button type="button" class="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90" @click="downloadPoster"><Download class="h-4 w-4" /> Download</button>
+                    <button type="button" class="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted sm:px-3 sm:py-2 sm:text-sm" @click="browseOpen = true"><LayoutList class="h-4 w-4" /> <span class="hidden sm:inline">Browse</span></button>
+                    <button v-if="currentTemplateId" type="button" class="rounded-md p-1.5 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive sm:p-2" title="Delete template" @click="deleteTemplate(currentTemplateId)"><Trash2 class="h-4 w-4" /></button>
+                    <button type="button" class="hidden items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted sm:inline-flex sm:px-3 sm:py-2 sm:text-sm" @click="saveTemplate(true)">Save as new</button>
+                    <button type="button" class="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted sm:px-3 sm:py-2 sm:text-sm" @click="saveTemplate(false)"><Save class="h-4 w-4" /> <span class="hidden sm:inline">Save</span></button>
+                    <button type="button" class="inline-flex items-center gap-1.5 rounded-md bg-primary px-2 py-1.5 text-xs font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90 sm:px-3 sm:py-2 sm:text-sm" @click="downloadPoster"><Download class="h-4 w-4" /> <span class="hidden sm:inline">Download</span></button>
                 </div>
+            </div>
+
+            <!-- Mobile panel tabs -->
+            <div class="flex border-b border-border bg-card md:hidden">
+                <button
+                    type="button"
+                    :class="['flex flex-1 items-center justify-center gap-1.5 py-2 text-xs font-medium transition', mobilePanel === 'tools' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground']"
+                    @click="mobilePanel = 'tools'"
+                >
+                    <Type class="h-3.5 w-3.5" /> Tools
+                </button>
+                <button
+                    type="button"
+                    :class="['flex flex-1 items-center justify-center gap-1.5 py-2 text-xs font-medium transition', mobilePanel === 'canvas' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground']"
+                    @click="mobilePanel = 'canvas'"
+                >
+                    <Square class="h-3.5 w-3.5" /> Canvas
+                </button>
+                <button
+                    type="button"
+                    :class="['flex flex-1 items-center justify-center gap-1.5 py-2 text-xs font-medium transition', mobilePanel === 'props' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground']"
+                    @click="mobilePanel = 'props'"
+                >
+                    <Paintbrush class="h-3.5 w-3.5" /> Properties
+                </button>
             </div>
 
             <div class="flex min-h-0 flex-1">
                 <!-- LEFT: toolbox -->
-                <aside class="flex w-48 shrink-0 flex-col gap-4 overflow-y-auto border-r border-border bg-card p-3">
+                <aside :class="['shrink-0 flex-col gap-4 overflow-y-auto border-r border-border bg-card p-3 md:flex md:w-48', mobilePanel === 'tools' ? 'flex w-full' : 'hidden']">
                     <div>
                         <div class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Add</div>
                         <div class="grid grid-cols-2 gap-1.5">
@@ -669,7 +697,7 @@ function relativeTime(iso?: string | null): string {
                 </aside>
 
                 <!-- CENTER: canvas -->
-                <main class="flex min-w-0 flex-1 flex-col bg-muted/40">
+                <main :class="['min-w-0 flex-col bg-muted/40 md:flex md:flex-1', mobilePanel === 'canvas' ? 'flex flex-1' : 'hidden']">
                     <div v-if="selectedLayers.length" class="flex flex-wrap items-center gap-2 border-b border-border bg-card/70 px-3 py-1.5">
                         <span class="text-xs text-muted-foreground">{{ selectedLayers.length > 1 ? `Align ${selectedLayers.length} layers` : 'Align to canvas' }}</span>
                         <div class="inline-flex overflow-hidden rounded-md border border-border">
@@ -700,7 +728,7 @@ function relativeTime(iso?: string | null): string {
                 </main>
 
                 <!-- RIGHT: properties + layers + data -->
-                <aside class="flex w-80 shrink-0 flex-col overflow-y-auto border-l border-border bg-card">
+                <aside :class="['shrink-0 flex-col overflow-y-auto border-l border-border bg-card md:flex md:w-80', mobilePanel === 'props' ? 'flex w-full' : 'hidden']">
                     <!-- Properties -->
                     <div v-if="selected" class="border-b border-border p-4">
                         <div class="mb-3 flex items-center justify-between">

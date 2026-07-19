@@ -178,7 +178,7 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
     <Head title="Update gold rate" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6 lg:p-8">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight text-foreground">Update gold rate</h1>
                 <p class="text-sm text-muted-foreground">Enter today's prices, preview the poster, and download it in one step.</p>
@@ -191,9 +191,9 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
                 <Link href="/gold-poster" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90">Open the poster editor</Link>
             </div>
 
-            <div v-else class="grid gap-6 xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)_minmax(0,440px)]">
+            <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)_minmax(0,440px)]">
                 <!-- Controls -->
-                <div class="space-y-5 xl:order-1">
+                <div class="space-y-5 md:col-start-1 md:row-start-1 md:col-span-1 md:row-span-1 xl:col-start-1 xl:row-start-1 xl:col-span-1 xl:row-span-1">
                     <section class="rounded-lg border border-border bg-card p-5 shadow-xs">
                         <label class="mb-1.5 block text-sm font-medium text-foreground">Design</label>
                         <select v-model="templateId" class="h-10 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground" @change="loadTemplate(templateId)">
@@ -201,10 +201,10 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
                         </select>
                     </section>
 
-                    <section class="rounded-lg border border-border bg-card p-5 shadow-xs">
+                    <section class="rounded-lg border border-border bg-card p-4 sm:p-5 shadow-xs">
                         <h2 class="mb-3 text-sm font-semibold text-foreground">Today's rate</h2>
-                        <div class="grid gap-3 sm:grid-cols-2">
-                            <div><label class="mb-1.5 block text-xs font-medium text-muted-foreground">Date</label><input v-model="rate.date" type="date" :class="inputClass" /></div>
+                        <div class="grid gap-3 grid-cols-1 sm:grid-cols-3">
+                            <div class="sm:col-span-3"><label class="mb-1.5 block text-xs font-medium text-muted-foreground">Date</label><input v-model="rate.date" type="date" :class="inputClass" /></div>
                             <div><label class="mb-1.5 block text-xs font-medium text-muted-foreground">22K · 1g</label><input v-model="rate.p22k1g" inputmode="numeric" placeholder="13880" :class="inputClass" /></div>
                             <div><label class="mb-1.5 block text-xs font-medium text-muted-foreground">22K · 8g</label><input v-model="rate.p22k8g" inputmode="numeric" placeholder="111040" :class="inputClass" /></div>
                             <div><label class="mb-1.5 block text-xs font-medium text-muted-foreground">18K · 1g</label><input v-model="rate.p18k1g" inputmode="numeric" placeholder="11356" :class="inputClass" /></div>
@@ -224,10 +224,10 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
                 </div>
 
                 <!-- Preview -->
-                <div class="xl:order-3 xl:sticky xl:top-6 xl:self-start">
+                <div class="md:col-start-2 md:row-start-1 md:col-span-1 md:row-span-2 md:sticky md:top-6 md:self-start xl:col-start-3 xl:row-start-1 xl:col-span-1 xl:row-span-1 xl:sticky xl:top-6 xl:self-start">
                     <div class="rounded-lg border border-border bg-card p-4 shadow-xs">
-                        <div class="relative overflow-hidden rounded-md border border-border bg-muted">
-                            <canvas ref="canvasRef" class="block h-auto w-full" />
+                        <div class="relative overflow-hidden rounded-md border border-border bg-muted flex items-center justify-center">
+                            <canvas ref="canvasRef" class="block w-full h-auto max-h-[500px] object-contain mx-auto" />
                             <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-background/60 text-sm text-muted-foreground">Loading…</div>
                         </div>
                         <button type="button" :disabled="loading" class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90 disabled:opacity-60" @click="downloadPoster">
@@ -237,9 +237,9 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
                 </div>
 
                 <!-- Analytics (middle) -->
-                <div class="space-y-6 xl:order-2">
+                <div class="space-y-6 md:col-start-1 md:row-start-2 md:col-span-1 md:row-span-1 xl:col-start-2 xl:row-start-1 xl:col-span-1 xl:row-span-1">
                 <!-- Trend chart -->
-                <section v-if="history.length" class="rounded-lg border border-border bg-card p-5 shadow-xs">
+                <section v-if="history.length" class="rounded-lg border border-border bg-card p-4 sm:p-5 shadow-xs">
                 <h2 class="text-sm font-semibold text-foreground">1 gram 22K trend</h2>
                 <p class="mb-4 text-xs text-muted-foreground">Saved daily rates over time.</p>
                 <div v-if="chart">
@@ -262,28 +262,28 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
 
             <!-- History table -->
             <section v-if="history.length" class="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
-                <div class="flex items-center justify-between border-b border-border px-5 py-4">
+                <div class="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5 sm:py-4">
                     <h2 class="text-sm font-semibold text-foreground">Rate history</h2>
                     <span class="text-xs text-muted-foreground">{{ history.length }} day{{ history.length === 1 ? '' : 's' }}</span>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
                         <thead>
                             <tr class="border-b border-border bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
-                                <th class="px-5 py-3 font-medium">Date</th>
-                                <th class="px-5 py-3 text-right font-medium">22K · 1g</th>
-                                <th class="px-5 py-3 text-right font-medium">22K · 8g</th>
-                                <th class="px-5 py-3 text-right font-medium">18K · 1g</th>
-                                <th class="px-5 py-3 text-right font-medium">Change (1g 22K)</th>
+                                <th class="px-3 py-3 sm:px-5 font-medium">Date</th>
+                                <th class="px-3 py-3 sm:px-5 text-right font-medium">22K · 1g</th>
+                                <th class="px-3 py-3 sm:px-5 text-right font-medium">22K · 8g</th>
+                                <th class="px-3 py-3 sm:px-5 text-right font-medium">18K · 1g</th>
+                                <th class="px-3 py-3 sm:px-5 text-right font-medium">Change</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border">
                             <tr v-for="r in tableRows" :key="r.date" class="transition hover:bg-muted/40">
-                                <td class="px-5 py-2.5 text-foreground">{{ displayDate(r.date) }}</td>
-                                <td class="px-5 py-2.5 text-right font-medium tabular-nums text-foreground">{{ fmt(r.price_22k_1g) }}</td>
-                                <td class="px-5 py-2.5 text-right tabular-nums text-muted-foreground">{{ fmt(r.price_22k_8g) }}</td>
-                                <td class="px-5 py-2.5 text-right tabular-nums text-muted-foreground">{{ fmt(r.price_18k_1g) }}</td>
-                                <td class="px-5 py-2.5 text-right tabular-nums">
+                                <td class="px-3 py-2.5 sm:px-5 text-foreground">{{ displayDate(r.date) }}</td>
+                                <td class="px-3 py-2.5 sm:px-5 text-right font-medium tabular-nums text-foreground">{{ fmt(r.price_22k_1g) }}</td>
+                                <td class="px-3 py-2.5 sm:px-5 text-right tabular-nums text-muted-foreground">{{ fmt(r.price_22k_8g) }}</td>
+                                <td class="px-3 py-2.5 sm:px-5 text-right tabular-nums text-muted-foreground">{{ fmt(r.price_18k_1g) }}</td>
+                                <td class="px-3 py-2.5 sm:px-5 text-right tabular-nums">
                                     <span v-if="r.change === null" class="text-muted-foreground">—</span>
                                     <span v-else-if="r.change > 0" class="inline-flex items-center justify-end gap-0.5 text-emerald-600 dark:text-emerald-400"><TrendingUp class="h-3.5 w-3.5" />{{ fmt(r.change) }}</span>
                                     <span v-else-if="r.change < 0" class="inline-flex items-center justify-end gap-0.5 text-rose-600 dark:text-rose-400"><TrendingDown class="h-3.5 w-3.5" />{{ fmt(Math.abs(r.change)) }}</span>

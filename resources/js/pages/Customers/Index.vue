@@ -235,7 +235,7 @@ const inputClass =
     <Head title="Customers" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6 lg:p-8">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
             <!-- Header -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -244,7 +244,7 @@ const inputClass =
                         {{ customers.total }} total customer{{ customers.total === 1 ? '' : 's' }}
                     </p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <div class="relative">
                         <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <input
@@ -265,8 +265,85 @@ const inputClass =
                 </div>
             </div>
 
-            <!-- Table -->
-            <div class="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
+            <!-- Mobile card list (hidden on md+) -->
+            <div class="flex flex-col gap-3 md:hidden">
+                <div
+                    v-for="customer in filteredCustomers"
+                    :key="customer.id"
+                    class="cursor-pointer rounded-lg border border-border bg-card p-4 shadow-xs transition hover:border-primary/30"
+                    @click="openView(customer.id)"
+                >
+                    <div class="mb-2 flex items-start justify-between gap-2">
+                        <div class="flex min-w-0 items-center gap-3">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                                {{ customer.name.charAt(0).toUpperCase() }}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="truncate font-medium text-foreground">{{ customer.name }}</span>
+                                    <span
+                                        v-if="customer.from_lead"
+                                        class="inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-medium text-violet-600 dark:text-violet-400"
+                                    >
+                                        <UserRoundCheck class="h-3 w-3" /> Lead
+                                    </span>
+                                </div>
+                                <p class="text-xs text-muted-foreground">Added {{ customer.created_at }}</p>
+                            </div>
+                        </div>
+                        <span class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium tabular-nums text-foreground">
+                            {{ customer.dates_count }}
+                        </span>
+                    </div>
+
+                    <div class="mb-3 flex flex-col gap-1 text-xs text-muted-foreground">
+                        <span v-if="customer.phone" class="flex items-center gap-1.5">
+                            <Phone class="h-3.5 w-3.5 shrink-0" />{{ customer.phone }}
+                        </span>
+                        <span v-if="customer.email" class="flex items-center gap-1.5">
+                            <Mail class="h-3.5 w-3.5 shrink-0" /><span class="truncate">{{ customer.email }}</span>
+                        </span>
+                        <span v-if="customer.whatsapp_number" class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                            <MessageCircle class="h-3.5 w-3.5 shrink-0" />{{ customer.whatsapp_number }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t border-border pt-3" @click.stop>
+                        <div v-if="customer.upcoming_event" class="flex items-center gap-2">
+                            <component :is="eventTypeIcon[customer.upcoming_event.type] ?? Star" :class="['h-4 w-4 shrink-0', eventTypeIconColor[customer.upcoming_event.type]]" />
+                            <p class="text-xs text-foreground">{{ customer.upcoming_event.display_title }} · in {{ customer.upcoming_event.days_until }}d</p>
+                        </div>
+                        <span v-else class="text-xs text-muted-foreground opacity-60">No upcoming event</span>
+                        <div class="flex items-center gap-1">
+                            <button class="rounded-md px-2.5 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/10" @click="openEdit(customer.id)">
+                                Edit
+                            </button>
+                            <button
+                                class="rounded-md p-1.5 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                                aria-label="Delete customer"
+                                @click="confirmDelete(customer)"
+                            >
+                                <Trash2 class="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="!filteredCustomers.length" class="rounded-lg border border-dashed border-border bg-card px-5 py-16 text-center">
+                    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                        <UsersRound class="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p class="text-sm font-medium text-foreground">
+                        {{ search ? 'No matching customers' : 'No customers found' }}
+                    </p>
+                    <p class="mt-0.5 text-sm text-muted-foreground">
+                        {{ search ? `Nothing matches "${search}" on this page.` : 'Add your first customer to start tracking their moments.' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Desktop table (hidden on mobile) -->
+            <div class="hidden overflow-hidden rounded-lg border border-border bg-card shadow-xs md:block">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead>

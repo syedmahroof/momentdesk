@@ -92,7 +92,7 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
                 <Link href="/gold-poster" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90">Open the editor</Link>
             </div>
 
-            <div v-else class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+            <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
                 <!-- Controls -->
                 <div class="space-y-5">
                     <section class="rounded-lg border border-border bg-card p-5 shadow-xs">
@@ -121,8 +121,8 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
                 <!-- Preview -->
                 <div class="lg:sticky lg:top-6 lg:self-start">
                     <div class="rounded-lg border border-border bg-card p-4 shadow-xs">
-                        <div class="relative overflow-hidden rounded-md border border-border bg-muted">
-                            <canvas ref="canvasRef" class="block h-auto w-full" />
+                        <div class="relative overflow-hidden rounded-md border border-border bg-muted flex items-center justify-center">
+                            <canvas ref="canvasRef" class="block h-auto max-w-full max-h-[500px] object-contain mx-auto" />
                             <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-background/60 text-sm text-muted-foreground">Loading…</div>
                         </div>
                     </div>

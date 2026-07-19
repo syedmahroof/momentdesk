@@ -249,7 +249,7 @@ const inputClass =
     <Head title="Leads" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="p-6">
+        <div class="p-4 sm:p-6">
             <!-- Header -->
             <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -293,7 +293,7 @@ const inputClass =
             </div>
 
             <!-- Filters -->
-            <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex flex-wrap items-center gap-2">
                     <button
                         v-for="tab in tabs"
@@ -311,7 +311,7 @@ const inputClass =
                     </button>
                 </div>
 
-                <div class="relative">
+                <div class="relative w-full sm:w-auto">
                     <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                         v-model="search"
@@ -340,8 +340,107 @@ const inputClass =
                 </p>
             </div>
 
-            <!-- List -->
-            <div v-else class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+            <!-- Mobile cards (hidden on md+) -->
+            <div v-else class="flex flex-col gap-3 md:hidden">
+                <div
+                    v-for="lead in filteredLeads"
+                    :key="lead.id"
+                    class="rounded-lg border border-border bg-card p-4 shadow-sm"
+                >
+                    <div class="mb-3 flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <button
+                                type="button"
+                                class="font-semibold text-foreground transition hover:text-primary"
+                                @click="openEdit(lead)"
+                            >
+                                {{ lead.name }}
+                            </button>
+                            <p class="mt-0.5 text-xs text-muted-foreground">
+                                {{ lead.created_at }}
+                            </p>
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <button
+                                    type="button"
+                                    class="inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition hover:opacity-80"
+                                    :class="lead.status_badge_classes"
+                                >
+                                    {{ lead.status_label }}
+                                    <ChevronDown class="h-3 w-3" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" class="w-44">
+                                <DropdownMenuLabel>Change status</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    v-for="status in statuses"
+                                    :key="status.value"
+                                    class="cursor-pointer justify-between"
+                                    @select="changeStatus(lead, status.value)"
+                                >
+                                    {{ status.label }}
+                                    <Check v-if="lead.status === status.value" class="h-3.5 w-3.5" />
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+
+                    <div class="mb-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+                        <span v-if="lead.phone" class="flex items-center gap-1.5">
+                            <Phone class="h-3.5 w-3.5" />{{ lead.phone }}
+                        </span>
+                        <span v-if="lead.email" class="flex items-center gap-1.5">
+                            <Mail class="h-3.5 w-3.5" />{{ lead.email }}
+                        </span>
+                        <span class="flex items-center gap-1.5">{{ lead.source_label }}</span>
+                        <span
+                            v-if="lead.follow_up_at"
+                            class="flex items-center gap-1.5"
+                            :class="lead.follow_up_overdue ? 'font-medium text-destructive' : ''"
+                        >
+                            <CalendarClock class="h-3.5 w-3.5" />
+                            {{ formatFollowUp(lead.follow_up_at) }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 border-t border-border pt-3">
+                        <div v-if="lead.customer" class="text-xs text-muted-foreground">
+                            Converted &middot;
+                            <Link :href="`/customers/${lead.customer.id}`" class="text-primary hover:underline">View customer</Link>
+                        </div>
+                        <span v-else />
+                        <div class="flex items-center gap-1">
+                            <button
+                                v-if="!lead.is_converted"
+                                type="button"
+                                class="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted"
+                                @click="convert(lead)"
+                            >
+                                <UserRoundCheck class="h-3.5 w-3.5" /> Convert
+                            </button>
+                            <button
+                                type="button"
+                                class="rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                @click="openEdit(lead)"
+                            >
+                                <Pencil class="h-4 w-4" />
+                            </button>
+                            <button
+                                type="button"
+                                class="rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                                @click="confirmDelete(lead)"
+                            >
+                                <Trash2 class="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop table (hidden on mobile) -->
+            <div v-if="filteredLeads.length > 0" class="hidden overflow-hidden rounded-lg border border-border bg-card shadow-sm md:block">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead class="border-b border-border bg-muted/40">
