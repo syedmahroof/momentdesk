@@ -27,7 +27,64 @@ export type Customer = {
     dates?: CustomerDate[];
     dates_count?: number;
     upcoming_event?: { display_title: string; days_until: number; type: string } | null;
+    from_lead?: boolean;
+    lead_source_label?: string | null;
     created_at?: string;
+};
+
+export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'won' | 'lost';
+
+export type LeadSource =
+    | 'walk_in'
+    | 'referral'
+    | 'instagram'
+    | 'whatsapp'
+    | 'phone_call'
+    | 'other';
+
+export type Lead = {
+    id: number;
+    name: string;
+    phone: string | null;
+    email: string | null;
+    whatsapp_number: string | null;
+    source: LeadSource;
+    source_label: string;
+    status: LeadStatus;
+    status_label: string;
+    status_badge_classes: string;
+    follow_up_at: string | null;
+    follow_up_overdue: boolean;
+    notes: string | null;
+    is_converted: boolean;
+    customer: { id: number; name: string } | null;
+    created_at?: string;
+};
+
+export type LeadStatusOption = {
+    value: LeadStatus;
+    label: string;
+    badge_classes: string;
+};
+
+export type LeadSourceOption = {
+    value: LeadSource;
+    label: string;
+};
+
+/**
+ * Shape backing the create/edit lead form. Dates and nullable columns are
+ * empty strings rather than null so they bind cleanly to inputs. Status is
+ * absent by design — it only moves via the dedicated status action.
+ */
+export type LeadFormFields = {
+    name: string;
+    phone: string;
+    email: string;
+    whatsapp_number: string;
+    source: LeadSource;
+    follow_up_at: string;
+    notes: string;
 };
 
 export type Template = {

@@ -26,25 +26,25 @@ function confirmDelete(flyerTemplate: FlyerTemplate): void {
     <Head title="Flyer Templates" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col gap-6 p-6">
-            <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-6 p-4 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <h1 class="text-xl font-bold text-foreground">Flyer Templates</h1>
                     <p class="text-sm text-muted-foreground">Build reusable layouts for rates, wishes, and product promos.</p>
                 </div>
                 <Link
                     href="/flyer-templates/create"
-                    class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
+                    class="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
                 >
                     <Plus class="h-4 w-4" />
                     New Template
                 </Link>
             </div>
 
-            <div v-if="!flyerTemplates.length" class="rounded-2xl border border-dashed border-border p-16 text-center">
+            <div v-if="!flyerTemplates.length" class="rounded-lg border border-dashed border-border p-16 text-center">
                 <h3 class="mb-2 text-base font-semibold text-foreground">No flyer templates yet</h3>
                 <p class="mb-6 text-sm text-muted-foreground">Create your first flyer layout to start generating ready-to-print designs.</p>
-                <Link href="/flyer-templates/create" class="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground">
+                <Link href="/flyer-templates/create" class="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground">
                     Create Template
                 </Link>
             </div>
@@ -53,7 +53,7 @@ function confirmDelete(flyerTemplate: FlyerTemplate): void {
                 <div
                     v-for="flyerTemplate in flyerTemplates"
                     :key="flyerTemplate.id"
-                    class="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:shadow-md"
+                    class="group rounded-lg border border-border bg-card p-5 shadow-sm transition hover:shadow-md"
                 >
                     <div class="mb-4 flex items-start justify-between gap-3">
                         <div>
@@ -65,7 +65,7 @@ function confirmDelete(flyerTemplate: FlyerTemplate): void {
                         </span>
                     </div>
 
-                    <div class="mb-4 rounded-xl border border-border/70 bg-muted/40 p-3">
+                    <div class="mb-4 rounded-lg border border-border/70 bg-muted/40 p-3">
                         <div class="mb-2 flex items-center justify-between text-xs text-muted-foreground">
                             <span>{{ flyerTemplate.canvas_width }} x {{ flyerTemplate.canvas_height }}</span>
                             <span>{{ flyerTemplate.elements.length }} elements</span>
@@ -83,7 +83,7 @@ function confirmDelete(flyerTemplate: FlyerTemplate): void {
 
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-muted-foreground">{{ flyerTemplate.created_at ?? 'Recently updated' }}</span>
-                        <div class="flex gap-2 opacity-0 transition group-hover:opacity-100">
+                        <div class="flex gap-2">
                             <Link
                                 :href="`/flyer-templates/${flyerTemplate.id}/edit`"
                                 class="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs text-foreground transition hover:bg-muted"

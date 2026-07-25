@@ -52,21 +52,21 @@ function confirmDelete(tenant: Tenant) {
                     <h1 class="text-xl font-bold text-foreground">Tenants</h1>
                     <p class="text-sm text-muted-foreground">{{ tenants.total }} total tenants</p>
                 </div>
-                <Link href="/admin/tenants/create" class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90">
+                <Link href="/admin/tenants/create" class="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90">
                     <Plus class="h-4 w-4" /> New Tenant
                 </Link>
             </div>
 
-            <div v-if="!tenants.data.length" class="rounded-2xl border border-dashed border-border p-16 text-center">
+            <div v-if="!tenants.data.length" class="rounded-lg border border-dashed border-border p-16 text-center">
                 <Building2 class="mx-auto mb-4 h-12 w-12 text-muted-foreground/30" />
                 <h3 class="mb-1 font-semibold text-foreground">No tenants yet</h3>
                 <p class="mb-6 text-sm text-muted-foreground">Create your first tenant to get started.</p>
-                <Link href="/admin/tenants/create" class="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground">
+                <Link href="/admin/tenants/create" class="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground">
                     Create Tenant
                 </Link>
             </div>
 
-            <div v-else class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div v-else class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border bg-muted/30">
@@ -80,7 +80,7 @@ function confirmDelete(tenant: Tenant) {
                         <tr v-for="tenant in tenants.data" :key="tenant.id" class="transition hover:bg-muted/20">
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-sm font-bold text-primary">
+                                    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
                                         {{ tenant.name.charAt(0) }}
                                     </div>
                                     <div>
