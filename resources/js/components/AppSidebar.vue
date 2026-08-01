@@ -3,7 +3,6 @@ import { Link } from '@inertiajs/vue3';
 import {
     LayoutDashboard,
     LayoutTemplate,
-    LifeBuoy,
     LineChart,
     RefreshCw,
     Settings,
@@ -64,11 +63,6 @@ const footerNavItems: NavItem[] = [
         title: 'Settings',
         href: '/settings/profile',
         icon: Settings,
-    },
-    {
-        title: 'Support',
-        href: 'https://laravel.com/docs',
-        icon: LifeBuoy,
     },
 ];
 </script>
