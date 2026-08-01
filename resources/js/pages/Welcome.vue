@@ -18,7 +18,7 @@ withDefaults(
 
 const features = [
     { icon: CalendarHeart, title: 'Date tracking', desc: 'Store birthdays, anniversaries, work milestones and any custom date per customer.' },
-    { icon: MessagesSquare, title: 'Multi-channel', desc: 'Send personalised wishes via WhatsApp, email, or SMS — the channel they use most.' },
+    { icon: MessagesSquare, title: 'Multi-channel', desc: 'Send personalised wishes via WhatsApp or email — the channel they use most.' },
     { icon: Sparkles, title: 'AI-written messages', desc: 'Let AI craft heartfelt, unique messages so every wish feels personal, never templated.' },
     { icon: AlarmClock, title: 'Auto reminders', desc: 'Set reminders days ahead. Never scramble at the last minute again.' },
     { icon: LayoutDashboard, title: 'Clear dashboard', desc: "See today's events, upcoming occasions, and delivery stats at a glance." },
@@ -27,8 +27,8 @@ const features = [
 
 const steps = [
     { title: 'Add your customers', desc: 'Import or add customers with their special dates — birthdays, anniversaries, milestones.' },
-    { title: 'Set up message templates', desc: 'Create personalised templates per occasion and channel. AI helps you write them in seconds.' },
-    { title: 'Sit back and delight', desc: 'MomentDesk sends wishes automatically on the right day and right channel. Customers feel remembered.' },
+    { title: 'Write the message', desc: 'Compose a wish for the occasion, or let AI draft and polish it in seconds.' },
+    { title: 'Send and delight', desc: 'Send on the right day through WhatsApp or email. Customers feel remembered.' },
 ];
 
 const stats = [
@@ -104,7 +104,7 @@ const stats = [
                 </h1>
 
                 <p class="mx-auto mb-9 max-w-xl text-lg leading-relaxed text-slate-500">
-                    Track birthdays, anniversaries &amp; milestones. Send personalised wishes via WhatsApp, email, or SMS — automatically.
+                    Track birthdays, anniversaries &amp; milestones. Send personalised wishes via WhatsApp or email — automatically.
                 </p>
 
                 <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">

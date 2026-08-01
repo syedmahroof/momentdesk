@@ -13,12 +13,12 @@ class EnsureTenant
     {
         $user = $request->user();
 
-        if ($user && ! $user->isSuperAdmin() && ! $user->tenant_id) {
+        if ($user && ! $user->tenant_id) {
             $user = app(ProvisionTenantForUser::class)($user);
             $request->setUserResolver(static fn () => $user);
         }
 
-        if ($user && ! $user->isSuperAdmin() && ! $user->tenant_id) {
+        if ($user && ! $user->tenant_id) {
             abort(403, 'No tenant assigned. Please contact your administrator.');
         }
 

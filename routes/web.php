@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\TenantController;
 use App\Http\Controllers\AIController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\CustomerController;
@@ -11,7 +10,6 @@ use App\Http\Controllers\GoldPosterController;
 use App\Http\Controllers\GoldRateController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\PosterTemplateController;
-use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\WishController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,6 +37,7 @@ Route::middleware(['auth', 'verified', 'ensure-tenant'])->group(function () {
     Route::delete('gold-poster/templates/{posterTemplate}', [PosterTemplateController::class, 'destroy'])->name('poster-templates.destroy');
     Route::get('gold-poster/rates/latest', [GoldRateController::class, 'latest'])->name('gold-rates.latest');
     Route::get('gold-poster/rates', [GoldRateController::class, 'index'])->name('gold-rates.index');
+    Route::get('gold-poster/rate-history', [GoldRateController::class, 'historyPage'])->name('gold-rates.history');
     Route::post('gold-poster/rates', [GoldRateController::class, 'store'])->name('gold-rates.store');
 
     Route::get('customers/{customer}/details', [CustomerController::class, 'details'])->name('customers.details');
@@ -58,18 +57,11 @@ Route::middleware(['auth', 'verified', 'ensure-tenant'])->group(function () {
         Route::post('send', [WishController::class, 'store'])->name('store');
     });
 
-    Route::post('wishes/bulk-today', [WishController::class, 'bulkSendToday'])->name('wishes.bulk-today');
-
-    Route::resource('templates', TemplateController::class)->except(['show']);
-
     Route::prefix('ai')->name('ai.')->group(function () {
         Route::post('generate-wish', [AIController::class, 'generateWish'])->name('generate-wish');
         Route::post('improve-template', [AIController::class, 'improveTemplate'])->name('improve-template');
     });
 });
 
-Route::middleware(['auth', 'verified', 'can:super-admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('tenants', TenantController::class);
-});
-
 require __DIR__.'/settings.php';
+require __DIR__.'/admin.php';

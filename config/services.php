@@ -23,27 +23,21 @@ return [
         ],
     ],
 
-    'twilio' => [
-        'sid' => env('TWILIO_SID'),
-        'token' => env('TWILIO_TOKEN'),
-        'from' => env('TWILIO_FROM'),
-    ],
-
     'whatsapp' => [
-        'token'    => env('WHATSAPP_TOKEN'),
+        'token' => env('WHATSAPP_TOKEN'),
         'phone_id' => env('WHATSAPP_PHONE_ID'),
     ],
 
     'google' => [
-        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
     'facebook' => [
-        'client_id'     => env('FACEBOOK_CLIENT_ID'),
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-        'redirect'      => env('FACEBOOK_REDIRECT_URI', '/auth/facebook/callback'),
+        'redirect' => env('FACEBOOK_REDIRECT_URI', '/auth/facebook/callback'),
     ],
 
 ];

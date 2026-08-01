@@ -9,7 +9,7 @@ MomentDesk is a Laravel 12 + Inertia Vue application for managing customers, imp
 - Backend: `Laravel 12`, `PHP`, `Fortify`, `Socialite`, `Wayfinder`
 - Frontend: `Inertia.js v2`, `Vue 3`, `TypeScript`, `Tailwind CSS v4`, `Vite`
 - AI: `prism-php/prism`, `openai-php/laravel`
-- Messaging: `twilio/sdk`
+- Messaging: WhatsApp Cloud API, Laravel Mail
 - Testing: `Pest v4` + Laravel test tooling
 
 ## Repository Structure

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     protected $fillable = [
@@ -48,13 +49,8 @@ class User extends Authenticatable
         return $this->hasMany(Customer::class, 'created_by');
     }
 
-    public function isSuperAdmin(): bool
-    {
-        return $this->role === 'super_admin';
-    }
-
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['super_admin', 'admin']);
+        return $this->role === 'admin';
     }
 }

@@ -6,6 +6,8 @@ use App\Models\GoldRate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class GoldRateController extends Controller
 {
@@ -19,6 +21,17 @@ class GoldRateController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(['rates' => self::history()]);
+    }
+
+    /**
+     * The rate history screen — the table and trend chart live here rather than on the
+     * daily update page, which stays focused on producing the poster.
+     */
+    public function historyPage(): Response
+    {
+        return Inertia::render('GoldPoster/RateHistory', [
+            'rates' => self::history(),
+        ]);
     }
 
     /**

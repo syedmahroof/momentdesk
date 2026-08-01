@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rm *)",
+      "Bash(perl -0pi -e \"s{^use Illuminate\\\\\\\\\\\\\\\\Console\\\\\\\\\\\\\\\\Scheduling\\\\\\\\\\\\\\\\Schedule;\\\\n}{}m\" bootstrap/app.php)",
+      "Bash(php -l bootstrap/app.php)",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\\\\n\" --max-time 8 https://images.pexels.com/)",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\\\\n\" --max-time 8 https://images.unsplash.com/)",
+      "Bash(curl -sL --max-time 20 -A \"Mozilla/5.0\" \"https://unsplash.com/s/photos/gold-jewellery\" -o /tmp/u.html -w \"%{http_code} %{size_download}\\\\n\")",
+      "Read(//tmp/**)",
+      "WebSearch",
+      "Bash(perl -pi -e \"s/ratio: 220 \\\\/ 100,/viewBox: BADGE_VIEW_BOX,/g\" resources/js/pages/GoldPoster/posterIcons.ts)",
+      "Bash(npx esbuild *)",
+      "Bash(node -e ' *)",
+      "Bash(magick montage *)",
+      "WebFetch(domain:unsplash.com)",
+      "Bash(perl -0pi -e ' *)",
+      "Bash(/Users/iocodpc006/personal/laravel/momentdesk/node_modules/.bin/esbuild check-style-clipboard.ts --bundle --platform=node --format=esm --outfile=check.mjs)",
+      "Bash(node check.mjs)",
+      "Bash(python3 -)",
+      "Bash(php -l app/Http/Controllers/Admin/PosterBackgroundController.php)",
+      "Bash(php -l app/Http/Controllers/Admin/PosterCategoryController.php)"
+    ]
+  }
+}

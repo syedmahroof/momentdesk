@@ -7,64 +7,64 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TenantController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filters = [
+            'search' => $request->string('search')->trim()->value(),
+            'status' => $request->string('status')->trim()->value(),
+        ];
+
         $tenants = Tenant::query()
             ->withCount('users', 'customers')
+            // Each row's users travel with the list so the detail drawer opens without a round trip.
+            ->with(['users' => fn ($query) => $query->orderBy('name')->select('id', 'tenant_id', 'name', 'email', 'role')])
+            ->when($filters['search'], fn ($query, string $search) => $query->where(
+                fn ($query) => $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+            ))
+            ->when($filters['status'], fn ($query, string $status) => $query->where('status', $status))
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString()
+            ->through(fn (Tenant $tenant): array => $this->toListItem($tenant));
 
         return Inertia::render('Admin/Tenants/Index', [
             'tenants' => $tenants,
+            'filters' => $filters,
         ]);
     }
 
-    public function create(): Response
+    /**
+     * Map a tenant to the payload consumed by the admin tenants table and its drawer.
+     *
+     * @return array{id: int, name: string, email: string, phone: ?string, status: string, users_count: int, customers_count: int, created_at: string, users: list<array{id: int, name: string, email: string, role: string}>}
+     */
+    private function toListItem(Tenant $tenant): array
     {
-        return Inertia::render('Admin/Tenants/Create');
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:tenants,email'],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'admin_name' => ['required', 'string', 'max:255'],
-            'admin_email' => ['required', 'email', 'unique:users,email'],
-            'admin_password' => ['required', 'string', 'min:8'],
-        ]);
-
-        $tenant = Tenant::create([
-            'name' => $validated['name'],
-            'slug' => Str::slug($validated['name']).'-'.Str::random(4),
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'status' => 'active',
-        ]);
-
-        User::create([
-            'tenant_id' => $tenant->id,
-            'name' => $validated['admin_name'],
-            'email' => $validated['admin_email'],
-            'password' => $validated['admin_password'],
-            'role' => 'admin',
-        ]);
-
-        return redirect()->route('admin.tenants.index')->with('success', "Tenant {$tenant->name} created.");
-    }
-
-    public function edit(Tenant $tenant): Response
-    {
-        return Inertia::render('Admin/Tenants/Edit', [
-            'tenant' => $tenant->load('users'),
-        ]);
+        return [
+            'id' => $tenant->id,
+            'name' => $tenant->name,
+            'email' => $tenant->email,
+            'phone' => $tenant->phone,
+            'status' => $tenant->status,
+            'users_count' => $tenant->users_count,
+            'customers_count' => $tenant->customers_count,
+            'created_at' => $tenant->created_at->format('M j, Y'),
+            'users' => $tenant->users
+                ->map(fn (User $user): array => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ])
+                ->all(),
+        ];
     }
 
     public function update(Request $request, Tenant $tenant): RedirectResponse
@@ -78,7 +78,8 @@ class TenantController extends Controller
 
         $tenant->update($validated);
 
-        return redirect()->route('admin.tenants.index')->with('success', 'Tenant updated.');
+        // Back to the list the drawer was opened from, filters and page intact.
+        return back()->with('success', 'Tenant updated.');
     }
 
     public function destroy(Tenant $tenant): RedirectResponse

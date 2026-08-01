@@ -58,11 +58,6 @@ class Tenant extends Model
         return $this->hasMany(Customer::class);
     }
 
-    public function templates(): HasMany
-    {
-        return $this->hasMany(Template::class);
-    }
-
     public function messageLogs(): HasMany
     {
         return $this->hasMany(MessageLog::class);

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import {
-    Building2,
     LayoutDashboard,
     LayoutTemplate,
     LifeBuoy,
-    MessageSquareText,
+    LineChart,
     RefreshCw,
     Settings,
     UserPlus,
@@ -27,8 +26,6 @@ import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
 import { dashboard } from '@/routes';
 
-const page = usePage<{ auth: { user: { role: string } } }>();
-
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
@@ -46,11 +43,6 @@ const mainNavItems: NavItem[] = [
         icon: Users,
     },
     {
-        title: 'Message templates',
-        href: '/templates',
-        icon: MessageSquareText,
-    },
-    {
         title: 'Templates',
         href: '/gold-poster/templates',
         icon: LayoutTemplate,
@@ -60,13 +52,10 @@ const mainNavItems: NavItem[] = [
         href: '/gold-poster/update',
         icon: RefreshCw,
     },
-];
-
-const adminNavItems: NavItem[] = [
     {
-        title: 'Tenants',
-        href: '/admin/tenants',
-        icon: Building2,
+        title: 'Rate history',
+        href: '/gold-poster/rate-history',
+        icon: LineChart,
     },
 ];
 
@@ -82,8 +71,6 @@ const footerNavItems: NavItem[] = [
         icon: LifeBuoy,
     },
 ];
-
-const isSuperAdmin = page.props.auth?.user?.role === 'super_admin';
 </script>
 
 <template>
@@ -102,7 +89,6 @@ const isSuperAdmin = page.props.auth?.user?.role === 'super_admin';
 
         <SidebarContent>
             <NavMain :items="mainNavItems" label="Main" />
-            <NavMain v-if="isSuperAdmin" :items="adminNavItems" label="Admin" />
         </SidebarContent>
 
         <SidebarFooter>

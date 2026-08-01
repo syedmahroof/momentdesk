@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Customer;
 use App\Models\CustomerDate;
-use App\Models\Template;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -13,13 +12,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Super Admin (no tenant)
-        User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@momentdesk.com',
-            'tenant_id' => null,
-            'role' => 'super_admin',
-        ]);
+        // Super admin for the admin panel — lives on the `admin` guard.
+        $this->call(AdminSeeder::class);
 
         // Demo tenant
         $tenant = Tenant::create([
@@ -36,54 +30,14 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // Default templates
-        $this->seedTemplates($tenant->id);
+        // Poster categories + starter gold-rate designs (Modern / Minimal / Advanced / Custom)
+        $this->call(PosterCategorySeeder::class);
+
+        // Jewellery background library (Bangle / Ring / Chain / …) for the poster editor
+        $this->call(PosterBackgroundSeeder::class);
 
         // Demo customers
         $this->seedCustomers($tenant->id, $admin->id);
-    }
-
-    private function seedTemplates(int $tenantId): void
-    {
-        $templates = [
-            [
-                'tenant_id' => $tenantId,
-                'name' => 'Birthday Wish (WhatsApp)',
-                'type' => 'birthday',
-                'channel' => 'whatsapp',
-                'content' => '🎂 Happy Birthday, {{customer_name}}! Wishing you a wonderful day filled with joy and love. May all your dreams come true!',
-                'is_default' => true,
-            ],
-            [
-                'tenant_id' => $tenantId,
-                'name' => 'Wedding Anniversary (WhatsApp)',
-                'type' => 'wedding',
-                'channel' => 'whatsapp',
-                'content' => '💍 Happy {{ordinal_years}} Wedding Anniversary, {{customer_name}}! Wishing you many more years of love and happiness together.',
-                'is_default' => true,
-            ],
-            [
-                'tenant_id' => $tenantId,
-                'name' => 'Work Anniversary (WhatsApp)',
-                'type' => 'work',
-                'channel' => 'whatsapp',
-                'content' => '🎉 Congratulations on your {{ordinal_years}} work anniversary, {{customer_name}}! Thank you for your dedication and hard work.',
-                'is_default' => true,
-            ],
-            [
-                'tenant_id' => $tenantId,
-                'name' => 'Birthday Wish (Email)',
-                'type' => 'birthday',
-                'channel' => 'email',
-                'subject' => 'Happy Birthday, {{customer_name}}!',
-                'content' => "Dear {{customer_name}},\n\nWishing you a very Happy Birthday! May this special day bring you joy, health, and happiness.\n\nWith warm regards,\nThe MomentDesk Team",
-                'is_default' => false,
-            ],
-        ];
-
-        foreach ($templates as $template) {
-            Template::create($template);
-        }
     }
 
     private function seedCustomers(int $tenantId, int $createdBy): void

@@ -38,9 +38,13 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            // Guards are named explicitly: the `auth:admin` middleware calls
+            // shouldUse('admin'), so an unqualified $request->user() would
+            // return the Admin on admin routes.
             'auth' => [
-                'user'   => $request->user(),
-                'tenant' => $request->user()?->tenant,
+                'user' => $request->user('web'),
+                'tenant' => $request->user('web')?->tenant,
+                'admin' => $request->user('admin'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

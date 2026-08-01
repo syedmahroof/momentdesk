@@ -27,7 +27,7 @@ class ProvisionTenantForUser
 
         $user->forceFill([
             'tenant_id' => $tenant->id,
-            'role' => $user->isSuperAdmin() ? 'super_admin' : 'admin',
+            'role' => 'admin',
         ])->save();
 
         return $user->fresh();

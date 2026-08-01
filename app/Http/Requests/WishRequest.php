@@ -16,8 +16,7 @@ class WishRequest extends FormRequest
         return [
             'customer_id' => ['required', 'exists:customers,id'],
             'customer_date_id' => ['required', 'exists:customer_dates,id'],
-            'channel' => ['required', 'in:whatsapp,email,sms'],
-            'template_id' => ['nullable', 'exists:templates,id'],
+            'channel' => ['required', 'in:whatsapp,email'],
             'message' => ['required', 'string', 'max:5000'],
         ];
     }
