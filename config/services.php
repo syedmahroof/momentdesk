@@ -46,4 +46,10 @@ return [
         'redirect'      => env('FACEBOOK_REDIRECT_URI', '/auth/facebook/callback'),
     ],
 
+    'mobile' => [
+        // Custom scheme the OAuth browser tab redirects to when handing the
+        // finished sign-in back to the mobile app.
+        'oauth_callback' => env('MOBILE_OAUTH_CALLBACK', 'momentdesk://auth/callback'),
+    ],
+
 ];

@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Actions\ProvisionTenantForUser;
+use App\Actions\ResolveSocialUser;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
 {
     public function __construct(
-        private readonly ProvisionTenantForUser $provisionTenantForUser,
+        private readonly ResolveSocialUser $resolveSocialUser,
     ) {}
 
     /** Redirect to the OAuth provider */
@@ -34,17 +32,7 @@ class SocialAuthController extends Controller
             return redirect()->route('login')->withErrors(['social' => 'Social login failed. Please try again.']);
         }
 
-        $user = User::firstOrCreate(
-            ['email' => $socialUser->getEmail()],
-            [
-                'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
-                'password' => bcrypt(Str::random(32)),
-                'email_verified_at' => now(),
-                'role' => 'admin',
-            ]
-        );
-
-        $user = ($this->provisionTenantForUser)($user);
+        $user = ($this->resolveSocialUser)($socialUser);
 
         Auth::login($user, true);
 
