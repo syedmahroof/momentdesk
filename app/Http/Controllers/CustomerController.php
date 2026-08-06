@@ -93,7 +93,7 @@ class CustomerController extends Controller
     {
         $customer->load([
             'dates' => fn ($q) => $q->orderBy('type'),
-            'messageLogs' => fn ($q) => $q->with('template')->latest()->take(10),
+            'messageLogs' => fn ($q) => $q->latest()->take(10),
         ]);
 
         return response()->json([
@@ -131,7 +131,7 @@ class CustomerController extends Controller
     {
         $customer->load([
             'dates' => fn ($q) => $q->orderBy('type'),
-            'messageLogs' => fn ($q) => $q->with('template')->latest()->take(10),
+            'messageLogs' => fn ($q) => $q->latest()->take(10),
         ]);
 
         return Inertia::render('Customers/Show', [

@@ -6,11 +6,9 @@ use App\Jobs\SendWishJob;
 use App\Models\Customer;
 use App\Models\CustomerDate;
 use App\Models\MessageLog;
-use App\Models\Template;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Twilio\Rest\Client as TwilioClient;
 
 class WishService
 {
@@ -18,14 +16,12 @@ class WishService
         Customer $customer,
         CustomerDate $date,
         string $channel,
-        string $message,
-        ?Template $template = null
+        string $message
     ): MessageLog {
         $log = MessageLog::create([
             'tenant_id' => $customer->tenant_id,
             'customer_id' => $customer->id,
             'customer_date_id' => $date->id,
-            'template_id' => $template?->id,
             'channel' => $channel,
             'message' => $message,
             'recipient' => $this->getRecipient($customer, $channel),
@@ -42,7 +38,6 @@ class WishService
         try {
             match ($log->channel) {
                 'email' => $this->sendEmail($log),
-                'sms' => $this->sendSms($log),
                 'whatsapp' => $this->sendWhatsApp($log),
             };
 
@@ -69,25 +64,8 @@ class WishService
 
         Mail::raw($log->message, function ($mail) use ($log) {
             $mail->to($log->customer->email, $log->customer->name)
-                ->subject($log->template?->subject ?? 'Special Wishes for You!');
+                ->subject('Special Wishes for You!');
         });
-    }
-
-    private function sendSms(MessageLog $log): void
-    {
-        if (! $log->customer->phone) {
-            throw new \RuntimeException('Customer has no phone number.');
-        }
-
-        $twilio = new TwilioClient(
-            config('services.twilio.sid'),
-            config('services.twilio.token')
-        );
-
-        $twilio->messages->create($log->customer->phone, [
-            'from' => config('services.twilio.from'),
-            'body' => $log->message,
-        ]);
     }
 
     private function sendWhatsApp(MessageLog $log): void
@@ -123,7 +101,6 @@ class WishService
     {
         return match ($channel) {
             'email' => $customer->email ?? '',
-            'sms' => $customer->phone ?? '',
             'whatsapp' => $customer->whatsapp_number ?? $customer->phone ?? '',
         };
     }

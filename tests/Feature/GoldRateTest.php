@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\GoldRate;
+use App\Models\PosterBackground;
 use App\Models\User;
 
 function saveRate($test, $user, string $date, int $p1, int $p8 = 0, int $p18 = 0)
@@ -66,4 +67,40 @@ test('latest returns the most recent rate for the tenant only', function () {
     $this->actingAs($stranger)->getJson(route('gold-rates.latest'))
         ->assertOk()
         ->assertJsonPath('rate', null);
+});
+
+test('the rate history page lists saved rates', function () {
+    $user = User::factory()->create();
+    saveRate($this, $user, '2026-04-01', 13000);
+    saveRate($this, $user, '2026-04-02', 13140);
+
+    $this->actingAs($user)
+        ->get(route('gold-rates.history'))
+        ->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('GoldPoster/RateHistory')
+            ->has('rates', 2)
+            ->where('rates.1.price_22k_1g', 13140));
+});
+
+test('guests cannot view the rate history page', function () {
+    $this->get(route('gold-rates.history'))->assertRedirect(route('login'));
+});
+
+test('the update screen offers the background library', function () {
+    $user = User::factory()->create();
+
+    PosterBackground::create([
+        'name' => 'Bangle art',
+        'path' => 'poster-backgrounds/bangle.jpg',
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('gold-poster.update'))
+        ->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->component('GoldPoster/Update')
+            ->has('backgrounds', 1)
+            ->where('backgrounds.0.name', 'Bangle art'));
 });

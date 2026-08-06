@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerDate;
-use App\Models\MessageLog;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -47,56 +46,18 @@ class DashboardController extends Controller
                 'ordinal_years' => $date->ordinal_years,
             ]);
 
-        $sentThisMonth = MessageLog::query()
-            ->where('status', 'sent')
-            ->whereMonth('sent_at', now()->month)
-            ->whereYear('sent_at', now()->year)
-            ->count();
-
-        $sentLastMonth = MessageLog::query()
-            ->where('status', 'sent')
-            ->whereMonth('sent_at', now()->subMonth()->month)
-            ->whereYear('sent_at', now()->subMonth()->year)
-            ->count();
-
         $stats = [
             'total_customers' => Customer::query()->count(),
             'today_events' => $todayEvents->count(),
             'upcoming_events' => $upcomingEvents->count(),
-            'sent_this_month' => $sentThisMonth,
-            'sent_trend' => $this->percentChange($sentLastMonth, $sentThisMonth),
         ];
 
         return Inertia::render('Dashboard', [
             'todayEvents' => $todayEvents,
             'upcomingEvents' => $upcomingEvents,
             'stats' => $stats,
-            'monthlySends' => $this->monthlySends(),
             'eventsByType' => $this->eventsByType(),
         ]);
-    }
-
-    /**
-     * Sent-message counts for the trailing 6 months, oldest first.
-     *
-     * @return array<int, array{label: string, count: int}>
-     */
-    private function monthlySends(): array
-    {
-        $counts = MessageLog::query()
-            ->where('status', 'sent')
-            ->whereNotNull('sent_at')
-            ->where('sent_at', '>=', now()->subMonths(5)->startOfMonth())
-            ->get(['sent_at'])
-            ->groupBy(fn ($log) => $log->sent_at->format('Y-m'))
-            ->map->count();
-
-        return collect(range(5, 0))
-            ->map(fn ($i) => [
-                'label' => now()->subMonths($i)->format('M'),
-                'count' => (int) ($counts[now()->subMonths($i)->format('Y-m')] ?? 0),
-            ])
-            ->all();
     }
 
     /**
@@ -126,14 +87,5 @@ class DashboardController extends Controller
             ])
             ->values()
             ->all();
-    }
-
-    private function percentChange(int $previous, int $current): ?int
-    {
-        if ($previous === 0) {
-            return $current > 0 ? 100 : null;
-        }
-
-        return (int) round((($current - $previous) / $previous) * 100);
     }
 }

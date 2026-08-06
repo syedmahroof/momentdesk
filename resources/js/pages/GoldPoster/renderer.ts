@@ -10,16 +10,47 @@ export interface Layer {
     imgId: number | null; w: number; h: number; naturalRatio: number;
     opacity: number; radius: number; strokeW: number; strokeColor: string; curve: number; fillEnabled: boolean;
     radiusTL: number; radiusTR: number; radiusBR: number; radiusBL: number;
+    /**
+     * Optional text box. When `boxW`/`boxH` are set the text wraps to that width and is
+     * aligned inside the box (`align` horizontally, `vAlign` vertically); when they are 0
+     * the layer hugs its own content, which is how every pre-box template behaves.
+     */
+    boxW?: number; boxH?: number; vAlign?: VerticalAlign;
+}
+
+export type VerticalAlign = 'top' | 'middle' | 'bottom';
+
+export interface StatusConfig {
+    mode: 'text' | 'icon' | 'both';
+    increaseText: string;
+    decreaseText: string;
+    icon: string;
+    order: 'icon-first' | 'text-first';
+}
+
+export interface PosterBackground {
+    color: string;
+    src: string | null;
+    /** Zoom on top of the cover fit: 1 fills the canvas exactly. */
+    scale?: number;
+    /** Pan from centre, in canvas units. */
+    offsetX?: number;
+    offsetY?: number;
 }
 
 export interface PosterDocument {
     version?: number;
     canvas?: { w: number; h: number };
-    bg?: { color: string; src: string | null };
+    bg?: PosterBackground;
     images?: Record<string, string>;
     layers: Layer[];
     fields?: Record<string, string>;
+    statusConfig?: StatusConfig;
 }
+
+// Reserved image-layer id: templates bind a layer to this id to show the current tenant's
+// logo automatically. Callers inject the real logo URL into `document.images` at load time.
+export const TENANT_LOGO_IMAGE_ID = 900001;
 
 export interface PosterAssets {
     images: Record<number, HTMLImageElement>;
@@ -79,29 +110,94 @@ function roundRectCorners(ctx: CanvasRenderingContext2D, x: number, y: number, w
     ctx.closePath();
 }
 
+/** Greedy word wrap to `maxWidth`, honouring the text's own line breaks. */
+function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    const out: string[] = [];
+    for (const paragraph of text.split('\n')) {
+        const words = paragraph.split(' ');
+        let line = '';
+        for (const word of words) {
+            const next = line ? `${line} ${word}` : word;
+            // A single word wider than the box stays on its own line rather than being cut up.
+            if (line && ctx.measureText(next).width > maxWidth) { out.push(line); line = word; }
+            else { line = next; }
+        }
+        out.push(line);
+    }
+    return out;
+}
+
+export interface TextLayout {
+    lines: string[];
+    /** Size of the layer's box — the fixed box if set, otherwise the text's own size. */
+    w: number; h: number;
+    lineH: number;
+    /** Baseline y of the first line and the x the lines are drawn from, both box-relative. */
+    startY: number; tx: number;
+}
+
+/**
+ * Lays out a text layer inside its box. Shared with the editor so what a user positions
+ * on screen is exactly what renders here.
+ */
+export function layoutText(ctx: CanvasRenderingContext2D, l: Layer, text: string): TextLayout {
+    ctx.font = `${l.weight} ${l.fontSize}px "${l.fontFamily}", sans-serif`;
+    try { ctx.letterSpacing = `${l.letterSpacing}px`; } catch { /* unsupported */ }
+    const boxW = l.boxW && l.boxW > 0 ? l.boxW : 0;
+    const lines = boxW ? wrapLines(ctx, text || ' ', boxW) : (text || ' ').split('\n');
+    let contentW = 0;
+    for (const ln of lines) contentW = Math.max(contentW, ctx.measureText(ln || ' ').width);
+    try { ctx.letterSpacing = '0px'; } catch { /* unsupported */ }
+
+    const lineH = l.fontSize * 1.25;
+    const textH = lines.length * lineH;
+    const w = boxW || contentW;
+    const h = l.boxH && l.boxH > 0 ? l.boxH : textH;
+    const vAlign = l.vAlign ?? 'middle';
+    const startY = (vAlign === 'top' ? -h / 2 : vAlign === 'bottom' ? h / 2 - textH : -textH / 2) + lineH / 2;
+    const tx = l.align === 'left' ? -w / 2 : l.align === 'right' ? w / 2 : 0;
+
+    return { lines, w, h, lineH, startY, tx };
+}
+
+/**
+ * The drawn size of a layer, in canvas units. Exported so callers that let users
+ * drag or resize a layer can hit-test and outline it exactly where it renders.
+ */
+export function layerSize(ctx: CanvasRenderingContext2D, l: Layer, fields: Fields): { w: number; h: number } {
+    return contentSize(ctx, l, fields);
+}
+
 function contentSize(ctx: CanvasRenderingContext2D, l: Layer, fields: Fields) {
     if (l.type === 'line') return { w: l.w, h: Math.max(l.h, Math.abs(l.curve) + l.h) };
     if (l.type !== 'text') return { w: l.w, h: l.h };
-    ctx.font = `${l.weight} ${l.fontSize}px "${l.fontFamily}"`;
-    try { ctx.letterSpacing = `${l.letterSpacing}px`; } catch { /* unsupported */ }
-    const lines = (displayText(l, fields) || ' ').split('\n');
-    let w = 0; for (const ln of lines) w = Math.max(w, ctx.measureText(ln || ' ').width);
-    try { ctx.letterSpacing = '0px'; } catch { /* unsupported */ }
-    return { w, h: lines.length * l.fontSize * 1.25 };
+    const t = layoutText(ctx, l, displayText(l, fields));
+    return { w: t.w, h: t.h };
 }
 
 function drawLayer(ctx: CanvasRenderingContext2D, l: Layer, getImage: (id: number) => HTMLImageElement | null, fields: Fields) {
-    if (l.type === 'image') { const im = l.imgId != null ? getImage(l.imgId) : null; if (im) ctx.drawImage(im, -l.w / 2, -l.h / 2, l.w, l.h); return; }
+    if (l.type === 'image') {
+        const im = l.imgId != null ? getImage(l.imgId) : null;
+        if (im) {
+            const scale = Math.min(l.w / im.width, l.h / im.height);
+            const dw = im.width * scale;
+            const dh = im.height * scale;
+            ctx.drawImage(im, -dw / 2, -dh / 2, dw, dh);
+        }
+        return;
+    }
     if (l.type === 'text') {
         ctx.save();
         if (l.shadow) { ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 12; }
-        ctx.font = `${l.weight} ${l.fontSize}px "${l.fontFamily}"`;
+        ctx.font = `${l.weight} ${l.fontSize}px "${l.fontFamily}", sans-serif`;
         ctx.fillStyle = l.color; ctx.textBaseline = 'middle';
-        const s = contentSize(ctx, l, fields); const lineH = l.fontSize * 1.25; const lines = displayText(l, fields).split('\n');
-        ctx.font = `${l.weight} ${l.fontSize}px "${l.fontFamily}"`;
+        const t = layoutText(ctx, l, displayText(l, fields));
+        // re-apply after layoutText (which resets letterSpacing while measuring)
+        ctx.font = `${l.weight} ${l.fontSize}px "${l.fontFamily}", sans-serif`;
         try { ctx.letterSpacing = `${l.letterSpacing}px`; } catch { /* unsupported */ }
-        let ty = -s.h / 2 + lineH / 2;
-        for (const line of lines) { ctx.textAlign = l.align; const tx = l.align === 'left' ? -s.w / 2 : l.align === 'right' ? s.w / 2 : 0; ctx.fillText(line, tx, ty); ty += lineH; }
+        ctx.textAlign = l.align;
+        let ty = t.startY;
+        for (const line of t.lines) { ctx.fillText(line, t.tx, ty); ty += t.lineH; }
         ctx.restore(); return;
     }
     ctx.save(); ctx.globalAlpha = l.opacity;
@@ -118,13 +214,26 @@ function drawLayer(ctx: CanvasRenderingContext2D, l: Layer, getImage: (id: numbe
     ctx.restore();
 }
 
+/**
+ * Draws a background image scaled to cover the canvas, then adjusted by the document's own
+ * zoom and pan so a photo can be framed deliberately rather than always centre-cropped.
+ */
+export function drawBackground(ctx: CanvasRenderingContext2D, img: HTMLImageElement, W: number, H: number, bg?: PosterBackground) {
+    const cover = Math.max(W / img.width, H / img.height);
+    const scale = cover * (bg?.scale && bg.scale > 0 ? bg.scale : 1);
+    const dw = img.width * scale;
+    const dh = img.height * scale;
+    ctx.drawImage(img, (W - dw) / 2 + (bg?.offsetX ?? 0), (H - dh) / 2 + (bg?.offsetY ?? 0), dw, dh);
+}
+
 export function renderDocument(canvas: HTMLCanvasElement, doc: PosterDocument, assets: PosterAssets, fields: Fields) {
     const ctx = canvas.getContext('2d'); if (!ctx) return;
     const W = doc.canvas?.w ?? 1080; const H = doc.canvas?.h ?? 1920;
     canvas.width = W; canvas.height = H;
     if (assets.bg) {
-        const img = assets.bg; const sc = Math.max(W / img.width, H / img.height);
-        ctx.drawImage(img, (W - img.width * sc) / 2, (H - img.height * sc) / 2, img.width * sc, img.height * sc);
+        // A zoomed-in background can leave gaps at the edges; the colour shows through there.
+        ctx.fillStyle = doc.bg?.color ?? '#0d3b34'; ctx.fillRect(0, 0, W, H);
+        drawBackground(ctx, assets.bg, W, H, doc.bg);
     } else {
         ctx.fillStyle = doc.bg?.color ?? '#0d3b34'; ctx.fillRect(0, 0, W, H);
     }

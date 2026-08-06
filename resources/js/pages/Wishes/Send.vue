@@ -2,14 +2,13 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { Award, Cake, ExternalLink, Heart, Loader2, Sparkles, Star } from 'lucide-vue-next';
 import axios from 'axios';
-import { computed, ref, type Component } from 'vue';
+import { ref, type Component } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem, type Customer, type CustomerDate, type Template } from '@/types';
+import { type BreadcrumbItem, type Customer, type CustomerDate } from '@/types';
 
 const props = defineProps<{
     customer: Customer;
     date: CustomerDate;
-    templates: Template[];
 }>();
 
 const page = usePage<{ flash: { success?: string; whatsapp_link?: string } }>();
@@ -23,8 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const form = useForm({
     customer_id: props.customer.id,
     customer_date_id: props.date.id,
-    channel: 'whatsapp' as 'whatsapp' | 'email' | 'sms',
-    template_id: null as number | null,
+    channel: 'whatsapp' as 'whatsapp' | 'email',
     message: '',
 });
 
@@ -34,23 +32,9 @@ const aiTone = ref<'friendly' | 'formal' | 'professional' | 'warm'>('friendly');
 const channelOptions = [
     { value: 'whatsapp', label: '💬 WhatsApp', color: 'border-green-300 bg-green-50 text-green-700' },
     { value: 'email', label: '📧 Email', color: 'border-blue-300 bg-blue-50 text-blue-700' },
-    { value: 'sms', label: '📱 SMS', color: 'border-purple-300 bg-purple-50 text-purple-700' },
 ];
 
 const toneOptions = ['friendly', 'formal', 'professional', 'warm'] as const;
-
-const filteredTemplates = computed(() =>
-    props.templates.filter((t) => t.channel === form.channel)
-);
-
-function applyTemplate(template: Template) {
-    form.template_id = template.id;
-    form.message = template.content
-        .replace('{{customer_name}}', props.customer.name)
-        .replace('{{event_name}}', props.date.display_title)
-        .replace('{{years}}', String(props.date.years))
-        .replace('{{ordinal_years}}', props.date.ordinal_years);
-}
 
 async function generateWithAI() {
     aiLoading.value = true;
@@ -151,31 +135,9 @@ const eventTypeIconColor: Record<string, string> = {
                                 'flex-1 rounded-lg border py-2.5 text-sm font-medium transition',
                                 form.channel === opt.value ? opt.color + ' ring-2 ring-offset-1 ring-current' : 'border-border text-muted-foreground hover:bg-muted',
                             ]"
-                            @click="form.channel = opt.value as typeof form.channel; form.template_id = null"
+                            @click="form.channel = opt.value as typeof form.channel"
                         >
                             {{ opt.label }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Templates -->
-                <div v-if="filteredTemplates.length" class="rounded-lg border border-border bg-card p-5 shadow-sm">
-                    <h2 class="mb-3 text-sm font-semibold text-muted-foreground">Templates</h2>
-                    <div class="flex flex-col gap-2">
-                        <button
-                            v-for="template in filteredTemplates"
-                            :key="template.id"
-                            type="button"
-                            :class="[
-                                'rounded-lg border p-3 text-left text-sm transition',
-                                form.template_id === template.id
-                                    ? 'border-primary bg-primary/5 text-foreground'
-                                    : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-muted',
-                            ]"
-                            @click="applyTemplate(template)"
-                        >
-                            <p class="font-medium text-foreground">{{ template.name }}</p>
-                            <p class="mt-0.5 line-clamp-2 text-xs">{{ template.content }}</p>
                         </button>
                     </div>
                 </div>
@@ -230,7 +192,7 @@ const eventTypeIconColor: Record<string, string> = {
                     <textarea
                         v-model="form.message"
                         rows="5"
-                        placeholder="Type your wish here, or use a template or AI to generate one..."
+                        placeholder="Type your wish here, or use AI to generate one..."
                         class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                     <p v-if="form.errors.message" class="mt-1 text-xs text-destructive">{{ form.errors.message }}</p>

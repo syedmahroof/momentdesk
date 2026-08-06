@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import {
     ArrowRight,
     Award,
@@ -7,22 +7,13 @@ import {
     CalendarClock,
     CalendarRange,
     Heart,
-    Send,
-    SendHorizonal,
     Star,
-    TrendingDown,
-    TrendingUp,
     UsersRound,
 } from 'lucide-vue-next';
 import { computed, type Component } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type TodayEvent, type UpcomingEvent } from '@/types';
 import { dashboard } from '@/routes';
-
-interface MonthlySend {
-    label: string;
-    count: number;
-}
 
 interface EventTypeCount {
     type: string;
@@ -34,15 +25,12 @@ interface Stats {
     total_customers: number;
     today_events: number;
     upcoming_events: number;
-    sent_this_month: number;
-    sent_trend: number | null;
 }
 
 const props = defineProps<{
     todayEvents: TodayEvent[];
     upcomingEvents: UpcomingEvent[];
     stats: Stats;
-    monthlySends: MonthlySend[];
     eventsByType: EventTypeCount[];
 }>();
 
@@ -84,19 +72,7 @@ const statCards = computed(() => [
         icon: CalendarRange,
         tint: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400',
     },
-    {
-        key: 'sent_this_month',
-        label: 'Sent this month',
-        value: props.stats.sent_this_month,
-        icon: Send,
-        tint: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
-        trend: props.stats.sent_trend,
-    },
 ]);
-
-// Bar chart — sequential single hue (blue). One measure, so no legend.
-const maxSends = computed(() => Math.max(1, ...props.monthlySends.map((m) => m.count)));
-const totalSends = computed(() => props.monthlySends.reduce((sum, m) => sum + m.count, 0));
 
 // Events-by-type — fixed categorical order, always paired with a label.
 const typeBarColor: Record<string, string> = {
@@ -107,10 +83,6 @@ const typeBarColor: Record<string, string> = {
 };
 const maxType = computed(() => Math.max(1, ...props.eventsByType.map((t) => t.count)));
 const totalTracked = computed(() => props.eventsByType.reduce((sum, t) => sum + t.count, 0));
-
-function bulkSendToday() {
-    router.post('/wishes/bulk-today');
-}
 </script>
 
 <template>
@@ -124,18 +96,10 @@ function bulkSendToday() {
                     <h1 class="text-2xl font-semibold tracking-tight text-foreground">Analytics overview</h1>
                     <p class="text-sm text-muted-foreground">Track engagement across every customer moment.</p>
                 </div>
-                <button
-                    v-if="todayEvents.length"
-                    class="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                    @click="bulkSendToday"
-                >
-                    <SendHorizonal class="h-4 w-4" />
-                    Send today's wishes ({{ todayEvents.length }})
-                </button>
             </div>
 
             <!-- KPIs -->
-            <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
                 <div
                     v-for="card in statCards"
                     :key="card.key"
@@ -149,91 +113,39 @@ function bulkSendToday() {
                             <component :is="card.icon" class="h-5 w-5" />
                         </span>
                     </div>
-                    <div class="mt-4 flex items-end justify-between gap-2">
-                        <p class="text-3xl font-semibold tracking-tight tabular-nums text-foreground">
-                            {{ card.value }}
-                        </p>
-                        <span
-                            v-if="card.trend !== undefined && card.trend !== null"
-                            :class="[
-                                'mb-1 inline-flex items-center gap-0.5 text-xs font-medium',
-                                card.trend >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400',
-                            ]"
-                        >
-                            <component :is="card.trend >= 0 ? TrendingUp : TrendingDown" class="h-3.5 w-3.5" />
-                            {{ Math.abs(card.trend) }}%
-                        </span>
-                    </div>
+                    <p class="mt-4 text-3xl font-semibold tracking-tight tabular-nums text-foreground">
+                        {{ card.value }}
+                    </p>
                 </div>
             </div>
 
-            <!-- Charts -->
-            <div class="grid gap-4 lg:grid-cols-3">
-                <!-- Messages sent (6 months) -->
-                <section class="rounded-lg border border-border bg-card shadow-xs lg:col-span-2">
-                    <header class="flex items-center justify-between border-b border-border px-6 py-4">
-                        <div>
-                            <h2 class="text-sm font-semibold text-foreground">Messages sent</h2>
-                            <p class="text-xs text-muted-foreground">Last 6 months</p>
+            <!-- Events by type -->
+            <section class="rounded-lg border border-border bg-card shadow-xs">
+                <header class="flex items-center justify-between border-b border-border px-6 py-4">
+                    <div>
+                        <h2 class="text-sm font-semibold text-foreground">Events by type</h2>
+                        <p class="text-xs text-muted-foreground">Tracked dates</p>
+                    </div>
+                    <span class="text-sm font-semibold tabular-nums text-foreground">{{ totalTracked }}</span>
+                </header>
+                <div class="flex flex-col gap-4 px-6 py-6">
+                    <div v-for="item in eventsByType" :key="item.type">
+                        <div class="mb-1.5 flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2 text-foreground">
+                                <component :is="eventTypeIcon[item.type] ?? Star" :class="['h-4 w-4', eventTypeIconColor[item.type]]" />
+                                {{ item.label }}
+                            </span>
+                            <span class="font-medium tabular-nums text-muted-foreground">{{ item.count }}</span>
                         </div>
-                        <span class="text-right">
-                            <span class="block text-lg font-semibold tabular-nums text-foreground">{{ totalSends }}</span>
-                            <span class="block text-xs text-muted-foreground">total</span>
-                        </span>
-                    </header>
-                    <div class="px-6 py-6">
-                        <div class="flex h-44 items-end justify-between gap-3">
+                        <div class="h-2 overflow-hidden rounded-full bg-muted">
                             <div
-                                v-for="month in monthlySends"
-                                :key="month.label"
-                                class="group relative flex flex-1 flex-col items-center justify-end gap-2"
-                            >
-                                <!-- hover tooltip -->
-                                <div
-                                    class="pointer-events-none absolute -top-1 z-10 -translate-y-full rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background opacity-0 shadow-sm transition group-hover:opacity-100"
-                                >
-                                    {{ month.count }}
-                                </div>
-                                <div class="flex w-full items-end justify-center" style="height: 9rem">
-                                    <div
-                                        class="w-full max-w-10 rounded-t bg-primary/85 transition group-hover:bg-primary"
-                                        :style="{ height: `${Math.max((month.count / maxSends) * 100, month.count > 0 ? 6 : 2)}%` }"
-                                    ></div>
-                                </div>
-                                <span class="text-xs font-medium text-muted-foreground">{{ month.label }}</span>
-                            </div>
+                                :class="['h-full rounded-full transition-all', typeBarColor[item.type]]"
+                                :style="{ width: `${(item.count / maxType) * 100}%` }"
+                            ></div>
                         </div>
                     </div>
-                </section>
-
-                <!-- Events by type -->
-                <section class="rounded-lg border border-border bg-card shadow-xs">
-                    <header class="flex items-center justify-between border-b border-border px-6 py-4">
-                        <div>
-                            <h2 class="text-sm font-semibold text-foreground">Events by type</h2>
-                            <p class="text-xs text-muted-foreground">Tracked dates</p>
-                        </div>
-                        <span class="text-sm font-semibold tabular-nums text-foreground">{{ totalTracked }}</span>
-                    </header>
-                    <div class="flex flex-col gap-4 px-6 py-6">
-                        <div v-for="item in eventsByType" :key="item.type">
-                            <div class="mb-1.5 flex items-center justify-between text-sm">
-                                <span class="flex items-center gap-2 text-foreground">
-                                    <component :is="eventTypeIcon[item.type] ?? Star" :class="['h-4 w-4', eventTypeIconColor[item.type]]" />
-                                    {{ item.label }}
-                                </span>
-                                <span class="font-medium tabular-nums text-muted-foreground">{{ item.count }}</span>
-                            </div>
-                            <div class="h-2 overflow-hidden rounded-full bg-muted">
-                                <div
-                                    :class="['h-full rounded-full transition-all', typeBarColor[item.type]]"
-                                    :style="{ width: `${(item.count / maxType) * 100}%` }"
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
+                </div>
+            </section>
 
             <!-- Event lists -->
             <div class="grid gap-4 lg:grid-cols-2">

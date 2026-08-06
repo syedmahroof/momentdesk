@@ -87,16 +87,6 @@ export type LeadFormFields = {
     notes: string;
 };
 
-export type Template = {
-    id: number;
-    name: string;
-    type: 'birthday' | 'wedding' | 'work' | 'custom';
-    channel: 'whatsapp' | 'email' | 'sms';
-    subject: string | null;
-    content: string;
-    is_default: boolean;
-};
-
 export type FlyerElement = {
     id: string;
     type: 'text' | 'image';
@@ -151,7 +141,6 @@ export type MessageLog = {
     message: string;
     status: 'pending' | 'sent' | 'failed' | 'delivered';
     sent_at: string | null;
-    template?: Template;
 };
 
 export type DashboardStats = {

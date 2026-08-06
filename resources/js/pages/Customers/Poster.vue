@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Download, ImagePlus } from 'lucide-vue-next';
+import { Check, Download, ImagePlus, Search } from 'lucide-vue-next';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ModalHost from '@/components/ModalHost.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { useModals } from '@/composables/useModals';
-import { type BreadcrumbItem } from '@/types';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { ensureFonts, loadDocumentAssets, renderDocument, type PosterAssets, type PosterDocument } from '@/pages/GoldPoster/renderer';
+import { useTemplateThumbnails } from '@/pages/GoldPoster/useTemplateThumbnails';
+import { type BreadcrumbItem } from '@/types';
 
 interface TemplateSummary { id: number; name: string; type?: string | null }
 interface CustomerLite { id: number; name: string; phone?: string | null; email?: string | null }
@@ -65,9 +66,20 @@ function download() {
 }
 
 watch(fieldValues, () => renderPreview(), { deep: true });
+const { thumbnails, loading: thumbnailsLoading, render: renderThumbnails } = useTemplateThumbnails();
+
+const designSearch = ref('');
+const visibleTemplates = computed(() => {
+    const q = designSearch.value.trim().toLowerCase();
+    if (!q) return props.templates;
+
+    return props.templates.filter((t) => `${t.name} ${t.type ?? ''}`.toLowerCase().includes(q));
+});
+
 onMounted(async () => {
     await ensureFonts();
     await loadTemplate(templateId.value);
+    await renderThumbnails(props.templates.map((t) => t.id));
     document.fonts.addEventListener('loadingdone', () => renderPreview());
 });
 
@@ -95,11 +107,37 @@ const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-
             <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
                 <!-- Controls -->
                 <div class="space-y-5">
-                    <section class="rounded-lg border border-border bg-card p-5 shadow-xs">
-                        <label class="mb-1.5 block text-sm font-medium text-foreground">Design</label>
-                        <select v-model="templateId" class="h-10 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground" @change="loadTemplate(templateId)">
-                            <option v-for="t in templates" :key="t.id" :value="t.id">{{ t.name }}{{ t.type ? ` · ${t.type}` : '' }}</option>
-                        </select>
+                    <section class="rounded-lg border border-border bg-card p-4 shadow-xs sm:p-5">
+                        <div class="mb-3 flex items-center gap-2">
+                            <h2 class="text-sm font-medium text-foreground">Design</h2>
+                            <span v-if="thumbnailsLoading" class="text-xs text-muted-foreground">rendering previews…</span>
+                        </div>
+                        <div v-if="templates.length > 6" class="relative mb-3">
+                            <Search class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                            <input v-model="designSearch" type="search" placeholder="Search designs…" :class="[inputClass, 'pl-9']" />
+                        </div>
+                        <div class="grid grid-cols-4 gap-2.5 sm:grid-cols-6 lg:grid-cols-7">
+                            <button
+                                v-for="t in visibleTemplates"
+                                :key="t.id"
+                                type="button"
+                                :class="['relative overflow-hidden rounded-md border-2 transition', templateId === t.id ? 'border-primary' : 'border-border hover:border-primary/50']"
+                                :title="t.name"
+                                @click="templateId = t.id; loadTemplate(t.id)"
+                            >
+                                <span class="block aspect-[9/16] w-full bg-muted">
+                                    <img v-if="thumbnails[t.id]" :src="thumbnails[t.id]" :alt="t.name" class="h-full w-full object-cover" />
+                                    <span v-else class="flex h-full w-full animate-pulse items-center justify-center px-1 text-center text-[10px] text-muted-foreground">{{ t.name }}</span>
+                                </span>
+                                <span v-if="templateId === t.id" class="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                    <Check class="h-3 w-3" />
+                                </span>
+                            </button>
+                            <div v-if="!visibleTemplates.length" class="col-span-full py-8 text-center">
+                                <p class="text-sm text-muted-foreground">No designs match “{{ designSearch }}”.</p>
+                                <button type="button" class="mt-1 text-xs font-medium text-primary hover:underline" @click="designSearch = ''">Clear search</button>
+                            </div>
+                        </div>
                     </section>
 
                     <section v-if="fieldKeys.length" class="rounded-lg border border-border bg-card p-5 shadow-xs">

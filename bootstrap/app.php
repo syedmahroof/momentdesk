@@ -3,11 +3,11 @@
 use App\Http\Middleware\EnsureTenant;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -28,9 +28,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'ensure-tenant' => EnsureTenant::class,
         ]);
-    })
-    ->withSchedule(function (Schedule $schedule): void {
-        $schedule->command('momentdesk:send-reminders')->dailyAt('08:00');
+
+        // The admin panel has its own guard, so it needs its own login screen.
+        $middleware->redirectGuestsTo(fn (Request $request): string => $request->is('admin', 'admin/*')
+            ? route('admin.login')
+            : route('login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

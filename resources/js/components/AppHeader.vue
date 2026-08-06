@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Monitor, Moon, Search, Sun } from 'lucide-vue-next';
+import { LayoutGrid, Menu, Monitor, Moon, Search, Sun } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useAppearance } from '@/composables/useAppearance';
 import AppLogo from '@/components/AppLogo.vue';
@@ -72,18 +72,7 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
+const rightNavItems: NavItem[] = [];
 </script>
 
 <template>
